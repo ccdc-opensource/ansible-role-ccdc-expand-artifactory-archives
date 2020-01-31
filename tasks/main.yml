@@ -1,0 +1,52 @@
+---
+
+- include: expand_archive.yml
+  with_items: "{{ archives_for_csd_data }}"
+  loop_control:
+    loop_var: archive
+
+- include: expand_archive.yml
+  with_items: "{{ archives_for_runtime_exes }}"
+  loop_control:
+    loop_var: archive
+
+- include: expand_archive.yml
+  with_items: "{{ archives_for_buildtools }}"
+  loop_control:
+    loop_var: archive
+
+- include: expand_archive.yml
+  with_items: "{{ archives_for_libraries }}"
+  loop_control:
+    loop_var: archive
+
+- include: expand_archive.yml
+  with_items: "{{ archives_for_mariadbtools }}"
+  loop_control:
+    loop_var: archive
+
+- include: expand_archive.yml
+  with_items: "{{ archives_for_legacy_ccdc_distributions }}"
+  loop_control:
+    loop_var: archive
+
+- include: expand_archive.yml
+  with_items: "{{ archives_for_pythontools }}"
+  loop_control:
+    loop_var: archive
+
+- name: Ensure that the python we install is present in the path for builds to work...
+  win_path:
+    elements:
+    - D:\x_mirror\buildman\tools\Python\Python-2.7.14-64bit
+    - D:\x_mirror\buildman\tools\Python\Python-2.7.14-64bit\Scripts
+
+- name: associate .py files with python
+  win_command: 'cmd /c assoc .py=Python.File'
+
+- name: associate .py files with python
+  win_command: 'cmd /c ftype Python.File=D:\x_mirror\buildman\tools\Python\Python-2.7.14-64bit\Python.exe "%1" %*'
+
+- name: Consolidate free space
+  win_defrag:
+    freespace_consolidation: yes

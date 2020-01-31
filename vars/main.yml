@@ -1,0 +1,290 @@
+---
+archives_for_runtime_exes:
+  - artifactory_path: ccdc-3rdparty-windows-runtime-exes
+    filename: fasta-36.3.8e.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\fasta
+  - artifactory_path: ccdc-3rdparty-windows-runtime-exes
+    filename: gzip-1.3.12-1-bin.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\gzip
+  - artifactory_path: ccdc-3rdparty-windows-runtime-exes
+    filename: povray-3.7.0.0.7z
+    base_destination_directory: D:\x_mirror\buildman\tools
+  - artifactory_path: ccdc-3rdparty-windows-runtime-exes
+    filename: R-2.11.1.7z
+    base_destination_directory: D:\x_mirror\buildman\tools
+
+archives_for_buildtools:
+  - artifactory_path: ccdc-3rdparty-windows-buildtools
+    filename: BitRock InstallBuilder for Qt 18.5.2.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\bitrock
+  - artifactory_path: ccdc-3rdparty-windows-buildtools
+    filename: squish-6.4.1-for-qt-5.9-vc2015-32bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\squish
+  - artifactory_path: ccdc-3rdparty-windows-buildtools
+    filename: squish-6.4.1-for-qt-5.9-vc2015-64bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\squish
+  - artifactory_path: ccdc-3rdparty-windows-buildtools
+    filename: gsoap-2.8.7z
+    base_destination_directory: D:\x_mirror\buildman\tools
+
+archives_for_libraries:
+  - artifactory_path: ccdc-3rdparty-windows-libraries
+    filename: boost_ccdc-1.9.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\boost
+  - artifactory_path: ccdc-3rdparty-windows-libraries
+    filename: ccdcsqlite-3.17.0-vc2017-32bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\ccdcsqlite
+  - artifactory_path: ccdc-3rdparty-windows-libraries
+    filename: ccdcsqlite-3.17.0-vc2017-64bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\ccdcsqlite
+  - artifactory_path: ccdc-3rdparty-windows-libraries
+    filename: cppad-20150000.9-vc2017-32bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\cppad
+  - artifactory_path: ccdc-3rdparty-windows-libraries
+    filename: cppad-20150000.9-vc2017-64bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\cppad
+  - artifactory_path: ccdc-3rdparty-windows-libraries
+    filename: cryptopp-5.6.2-vc2017-32bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\cryptopp
+  - artifactory_path: ccdc-3rdparty-windows-libraries
+    filename: cryptopp-5.6.2-vc2017-64bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\cryptopp
+  - artifactory_path: ccdc-3rdparty-windows-libraries
+    filename: freetype-2.4.10-vc2017-32bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\freetype
+  - artifactory_path: ccdc-3rdparty-windows-libraries
+    filename: freetype-2.4.10-vc2017-64bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\freetype
+  - artifactory_path: ccdc-3rdparty-windows-libraries
+    filename: googletest-98a0d00-vc2017-32bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\googletest
+  - artifactory_path: ccdc-3rdparty-windows-libraries
+    filename: googletest-98a0d00-vc2017-64bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\googletest
+  - artifactory_path: ccdc-3rdparty-windows-libraries
+    filename: inchi-1.04-vc2017-32bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\inchi
+  - artifactory_path: ccdc-3rdparty-windows-libraries
+    filename: inchi-1.04-vc2017-64bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\inchi
+  - artifactory_path: ccdc-3rdparty-windows-libraries
+    filename: libxl-3.6.2.0.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\libxl
+  - artifactory_path: ccdc-3rdparty-windows-libraries
+    filename: OpenSceneGraph-3.6.1-vc2017-32bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\OpenSceneGraph
+  - artifactory_path: ccdc-3rdparty-windows-libraries
+    filename: OpenSceneGraph-3.6.1-vc2017-64bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\OpenSceneGraph
+  - artifactory_path: ccdc-3rdparty-windows-libraries
+    filename: openssl-1.0.2o-vc2017-32bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\OpenSSL
+  - artifactory_path: ccdc-3rdparty-windows-libraries
+    filename: openssl-1.0.2o-vc2017-64bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\OpenSSL
+  - artifactory_path: ccdc-3rdparty-windows-libraries
+    filename: qt-5.9.5-vc2017-64bit-desktop-opengl.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\qt
+  - artifactory_path: ccdc-3rdparty-windows-libraries
+    filename: qt-5.9.5-vc2017-32bit-desktop-opengl.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\qt
+  - artifactory_path: ccdc-3rdparty-windows-libraries
+    filename: qwt-6.1.3-for-qt-5.9.5-vc2017-32bit-desktop-opengl.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\qwt
+  - artifactory_path: ccdc-3rdparty-windows-libraries
+    filename: qwt-6.1.3-for-qt-5.9.5-vc2017-64bit-desktop-opengl.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\qwt
+  - artifactory_path: ccdc-3rdparty-windows-libraries
+    filename: rapidjson-1.0.2.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\rapidjson
+  - artifactory_path: ccdc-3rdparty-windows-libraries
+    filename: zlib128-dll-vc2017-32bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\zlib
+  - artifactory_path: ccdc-3rdparty-windows-libraries
+    filename: zlib128-dll-vc2017-64bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\zlib
+
+archives_for_mariadbtools:
+  - artifactory_path: ccdc-3rdparty-windows-mariadbtools
+    filename: mariadb-10.0.16.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\mariadb
+  - artifactory_path: ccdc-3rdparty-windows-mariadbtools
+    filename: mariadb_client-2.0.0-32bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\mariadb_client
+  - artifactory_path: ccdc-3rdparty-windows-mariadbtools
+    filename: mariadb_client-2.0.0-64bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\mariadb_client
+
+archives_for_legacy_ccdc_distributions:
+  - artifactory_path: ccdc-legacy-windows-distributions
+    filename: csdsv5-32bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\csdsv5
+  - artifactory_path: ccdc-legacy-windows-distributions
+    filename: teched-32bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\teched
+
+archives_for_pythontools:
+  - artifactory_path: ccdc-3rdparty-windows-pythontools
+    filename: anaconda-3.16.0.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\anaconda
+  - artifactory_path: ccdc-3rdparty-windows-pythontools
+    filename: anaconda-3.16.0-64bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\anaconda
+  - artifactory_path: ccdc-3rdparty-windows-pythontools
+    filename: miniconda-4.0.5-32bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\miniconda
+  - artifactory_path: ccdc-3rdparty-windows-pythontools
+    filename: miniconda-4.0.5-64bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\miniconda
+  - artifactory_path: ccdc-3rdparty-windows-pythontools
+    filename: miniconda3-4.5.12-64bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\miniconda3
+  - artifactory_path: ccdc-3rdparty-windows-pythontools
+    filename: Python-2.7.6.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\
+  - artifactory_path: ccdc-3rdparty-windows-pythontools
+    filename: Python-2.7.14-32bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\Python
+  - artifactory_path: ccdc-3rdparty-windows-pythontools
+    filename: Python-2.7.14-64bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\Python
+  - artifactory_path: ccdc-3rdparty-windows-pythontools
+    filename: Python-3.7.1-32bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\Python
+  - artifactory_path: ccdc-3rdparty-windows-pythontools
+    filename: Python-3.7.1-64bit.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\Python
+  - artifactory_path: ccdc-3rdparty-windows-pythontools
+    filename: swigwin-3.0.12.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\swig
+  - artifactory_path: ccdc-3rdparty-windows-pythontools
+    filename: swigwin-3.0.2.7z
+    base_destination_directory: D:\x_mirror\buildman\tools\swig
+
+archives_for_csd_data:
+  # RP licence for builds and tests
+  - artifactory_path: ccdc-confidential-data-local/uk.ac.cam.ccdc/rp-licenses/
+    filename: rp-license-ccdc-2019.1.zip
+    base_destination_directory: D:\x_mirror\CSDv540\csd
+    move_and_delete_base_directory: rp-license-ccdc-2019.1
+
+  # Crossminer database for CSD 540
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-crossminer-databases/
+    filename: ccdc-crossminer-databases-540.0.zip
+    base_destination_directory: D:\x_mirror\CSDv540\crossminer
+    move_and_delete_base_directory: ccdc-crossminer-databases-540.0
+  # Crossminer drugbank cavities for CSD 540
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-csd-drugbank-cavities/
+    filename: ccdc-csd-drugbank-cavities-540.0.zip
+    base_destination_directory: D:\x_mirror\CSDv540\cavities
+    move_and_delete_base_directory: ccdc-csd-drugbank-cavities-540.0
+
+  # Isostar data for CSD 540
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-csd-isostar-data/
+    filename: ccdc-csd-isostar-data-540.0.zip
+    base_destination_directory: D:\x_mirror\CSDv540\isostar_files
+    move_and_delete_base_directory: ccdc-csd-isostar-data-540.0
+
+  # Mogul data
+  # Please note the discrepancy between zip filename and the position on disk
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-csd-mogul-data/
+    filename: ccdc-csd-mogul-data-540.0.zip
+    base_destination_directory: D:\x_mirror\CSDv540\mogul\data
+    move_and_delete_base_directory: ccdc-csd-mogul-data-540.0
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-csd-mogul-data/
+    filename: ccdc-csd-mogul-data-540.1.zip
+    base_destination_directory: D:\x_mirror\CSDv540\mogul\data\Feb19
+    move_and_delete_base_directory: ccdc-csd-mogul-data-540.1
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-csd-mogul-data/
+    filename: ccdc-csd-mogul-data-540.2.zip
+    base_destination_directory: D:\x_mirror\CSDv540\mogul\data\May19
+    move_and_delete_base_directory: ccdc-csd-mogul-data-540.2
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-csd-mogul-data/
+    filename: ccdc-csd-mogul-data-540.3.zip
+    base_destination_directory: D:\x_mirror\CSDv540\mogul\data\Aug19
+    move_and_delete_base_directory: ccdc-csd-mogul-data-540.3
+    
+  # cache databases... these should not be necessary any more..
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-csd-sqlite-aser-cache-database/
+    filename: ccdc-csd-sqlite-aser-cache-database-39.zip
+    base_destination_directory: D:\x_mirror\CSDv540\thomas_cache_databases\V39
+    move_and_delete_base_directory: ccdc-csd-sqlite-aser-cache-database-39
+
+  # CSD subsets
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-csd-subsets/
+    filename: ccdc-csd-subsets-540.3.zip
+    base_destination_directory: D:\x_mirror\CSDv540\csd\subsets
+    move_and_delete_base_directory: ccdc-csd-subsets-540.3
+
+  # Structure assignment reference data
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-structure-assignment-reference-data/
+    filename: ccdc-csd-structure-assignment-reference-data-540.0.zip
+    base_destination_directory: D:\x_mirror\CSDv540\csd
+    move_and_delete_base_directory: ccdc-csd-structure-assignment-reference-data-540.0
+
+  # CellcheckCSD database for CSD 540
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-csd-cellcheckdb/
+    filename: ccdc-csd-cellcheckdb-540.0.zip
+    base_destination_directory: D:\x_mirror\CSDv540\csd
+    move_and_delete_base_directory: ccdc-csd-cellcheckdb-540.0
+
+  # The CSD itself in all the formats used by tests
+  # Pure ASER blobs
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-csd-aser/
+    filename: ccdc-csd-aser-540.0.zip
+    base_destination_directory: D:\x_mirror\CSDv540\csd
+    move_and_delete_base_directory: ccdc-csd-aser-540.0
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-csd-aser/
+    filename: ccdc-csd-aser-540.1.zip
+    base_destination_directory: D:\x_mirror\CSDv540\csd
+    move_and_delete_base_directory: ccdc-csd-aser-540.1
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-csd-aser/
+    filename: ccdc-csd-aser-540.2.zip
+    base_destination_directory: D:\x_mirror\CSDv540\csd
+    move_and_delete_base_directory: ccdc-csd-aser-540.2
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-csd-aser/
+    filename: ccdc-csd-aser-540.3.zip
+    base_destination_directory: D:\x_mirror\CSDv540\csd
+    move_and_delete_base_directory: ccdc-csd-aser-540.3
+    
+  # SQLite-ASER blobs schema version 3.0
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-csd-sqlite-schema3.0_aser/
+    filename: ccdc-csd-sqlite-schema3.0_aser-540.0.zip
+    base_destination_directory: D:\x_mirror\CSDv540\sqlite_csd\schema_3.0.0
+    move_and_delete_base_directory: ccdc-csd-sqlite-schema3.0_aser-540.0
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-csd-sqlite-schema3.0_aser/
+    filename: ccdc-csd-sqlite-schema3.0_aser-540.1.zip
+    base_destination_directory: D:\x_mirror\CSDv540\sqlite_csd\schema_3.0.0
+    move_and_delete_base_directory: ccdc-csd-sqlite-schema3.0_aser-540.1
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-csd-sqlite-schema3.0_aser/
+    filename: ccdc-csd-sqlite-schema3.0_aser-540.2.zip
+    base_destination_directory: D:\x_mirror\CSDv540\sqlite_csd\schema_3.0.0
+    move_and_delete_base_directory: ccdc-csd-sqlite-schema3.0_aser-540.2
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-csd-sqlite-schema3.0_aser/
+    filename: ccdc-csd-sqlite-schema3.0_aser-540.3.zip
+    base_destination_directory: D:\x_mirror\CSDv540\sqlite_csd\schema_3.0.0
+    move_and_delete_base_directory: ccdc-csd-sqlite-schema3.0_aser-540.3
+  # SQLite-ASER blobs schema version 1.3
+  # For some reason the Feb19 update is not there for SQLite-ASER blobs schema version 1.3
+  # Probably both should be removed...
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-csd-sqlite-schema1.3_aser/
+    filename: ccdc-csd-sqlite-schema1.3_aser-540.0.zip
+    base_destination_directory: D:\x_mirror\CSDv540\sqlite_csd\schema_1_3
+    move_and_delete_base_directory: ccdc-csd-sqlite-schema1.3_aser-540.0
+  # SQLite-Fastbinary blobs schema version 1.3
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-csd-sqlite-schema1.3_fastbinary/
+    filename: ccdc-csd-sqlite-schema1.3_fastbinary-540.0.zip
+    base_destination_directory: D:\x_mirror\CSDv540\sqlite_csd\schema_1_3
+    move_and_delete_base_directory: ccdc-csd-sqlite-schema1.3_fastbinary-540.0
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-csd-sqlite-schema1.3_fastbinary/
+    filename: ccdc-csd-sqlite-schema1.3_fastbinary-540.1.zip
+    base_destination_directory: D:\x_mirror\CSDv540\sqlite_csd\schema_1_3
+    move_and_delete_base_directory: ccdc-csd-sqlite-schema1.3_fastbinary-540.1
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-csd-sqlite-schema1.3_fastbinary/
+    filename: ccdc-csd-sqlite-schema1.3_fastbinary-540.2.zip
+    base_destination_directory: D:\x_mirror\CSDv540\sqlite_csd\schema_1_3
+    move_and_delete_base_directory: ccdc-csd-sqlite-schema1.3_fastbinary-540.2
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-csd-sqlite-schema1.3_fastbinary/
+    filename: ccdc-csd-sqlite-schema1.3_fastbinary-540.3.zip
+    base_destination_directory: D:\x_mirror\CSDv540\sqlite_csd\schema_1_3
+    move_and_delete_base_directory: ccdc-csd-sqlite-schema1.3_fastbinary-540.3
