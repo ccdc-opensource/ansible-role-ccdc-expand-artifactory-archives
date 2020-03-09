@@ -1,0 +1,10 @@
+---
+platform_specific_default_base_artifactory_archive_directory: /opt/ccdc/artifactory-archives
+required_packages:
+  - p7zip-full
+  - zstd
+  - tar
+  - gzip
+  - xz-utils
+p7zip_location: /usr/bin/7z
+zstd_location: /usr/bin/zstd

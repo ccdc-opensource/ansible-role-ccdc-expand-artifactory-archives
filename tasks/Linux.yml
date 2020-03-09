@@ -1,0 +1,27 @@
+---
+- name: Ensure artifactory status archives directory is present
+  file:
+    path: "{{artifactory_status_directory}}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    mode: '0755'
+  become: true
+
+- name: Ensure artifactory downloads archives directory is present
+  file:
+    path: "{{artifactory_downloads_directory}}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    mode: '0755'
+  become: true
+
+- name: Add required packages
+  package:
+    name: "{{ required_packages }}"
+    state: present
+  become: yes
+
+- include: expand_archive_posix.yml
+  loop: "{{ archive_definitions }}"
+  loop_control:
+    loop_var: archive

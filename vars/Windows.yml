@@ -1,0 +1,6 @@
+---
+platform_specific_default_base_artifactory_archive_directory: D:/artifactory-archives
+required_packages:
+  - 7zip.install
+  - 7zip.portable
+  - zstandard

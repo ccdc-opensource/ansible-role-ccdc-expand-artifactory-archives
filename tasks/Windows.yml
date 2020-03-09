@@ -1,0 +1,19 @@
+---
+- name: Ensure artifactory status archives directory is present
+  win_file:
+    path: "{{ artifactory_status_directory }}"
+    state: directory
+
+- name: Ensure artifactory downloads archives directory is present
+  win_file:
+    path: "{{ artifactory_downloads_directory }}"
+    state: directory
+
+- name: Install required tools
+  win_chocolatey:
+    name: "{{ required_packages }}"
+
+- include: expand_archive_windows.yml
+  loop: "{{ archive_definitions }}"
+  loop_control:
+    loop_var: archive

@@ -1,52 +1,24 @@
 ---
-
-- include: expand_archive.yml
-  with_items: "{{ archives_for_csd_data }}"
+- name: Read platform-specific variables
+  include_vars: "{{ varfile }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+        - "{{ ansible_distribution }}.yml"
+        - "{{ ansible_os_family }}.yml"
+        - "{{ ansible_system }}.yml"
+      skip: true
   loop_control:
-    loop_var: archive
+    loop_var: varfile
 
-- include: expand_archive.yml
-  with_items: "{{ archives_for_runtime_exes }}"
+- name: Expand artifactory archives (Platform specific)
+  include_tasks: "{{ taskfile }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+        - "{{ ansible_distribution }}.yml"
+        - "{{ ansible_os_family }}.yml"
+        - "{{ ansible_system }}.yml"
+      skip: true
   loop_control:
-    loop_var: archive
-
-- include: expand_archive.yml
-  with_items: "{{ archives_for_buildtools }}"
-  loop_control:
-    loop_var: archive
-
-- include: expand_archive.yml
-  with_items: "{{ archives_for_libraries }}"
-  loop_control:
-    loop_var: archive
-
-- include: expand_archive.yml
-  with_items: "{{ archives_for_mariadbtools }}"
-  loop_control:
-    loop_var: archive
-
-- include: expand_archive.yml
-  with_items: "{{ archives_for_legacy_ccdc_distributions }}"
-  loop_control:
-    loop_var: archive
-
-- include: expand_archive.yml
-  with_items: "{{ archives_for_pythontools }}"
-  loop_control:
-    loop_var: archive
-
-- name: Ensure that the python we install is present in the path for builds to work...
-  win_path:
-    elements:
-    - D:\x_mirror\buildman\tools\Python\Python-2.7.14-64bit
-    - D:\x_mirror\buildman\tools\Python\Python-2.7.14-64bit\Scripts
-
-- name: associate .py files with python
-  win_command: 'cmd /c assoc .py=Python.File'
-
-- name: associate .py files with python
-  win_command: 'cmd /c ftype Python.File=D:\x_mirror\buildman\tools\Python\Python-2.7.14-64bit\Python.exe "%1" %*'
-
-- name: Consolidate free space
-  win_defrag:
-    freespace_consolidation: yes
+    loop_var: taskfile

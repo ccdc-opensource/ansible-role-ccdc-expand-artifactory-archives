@@ -1,0 +1,103 @@
+---
+- name: "{{ archive.filename }}: Ensure destination directory is present"
+  win_file:
+    path: "{{ archive.base_destination_directory }}"
+    state: directory
+
+- name: "{{ archive.filename }}: Check sh256 file is present"
+  win_stat:
+    path: "{{ artifactory_status_directory }}/{{ archive.filename }}.sha256"
+  register: archiveextracted
+
+- name: "{{ archive.filename }}: Read sha256 from archiveextracted file if present"
+  slurp:
+    src: "{{ artifactory_status_directory }}/{{ archive.filename }}.sha256"
+  register: archiveextracted_sha256
+  when: archiveextracted.stat.exists
+
+- name: "{{ archive.filename }}: Perform a HEAD on the remote file to read sha256"
+  win_uri:
+    url: "{{ artifactory_base_url }}/{{ archive.artifactory_path }}/{{ archive.filename }}"
+    method: HEAD
+  register: remote_archive_head
+
+- name: "{{ archive.filename }}: Download file if sha256 changed"
+  win_get_url:
+    url: "{{ artifactory_base_url }}/{{ archive.artifactory_path }}/{{ archive.filename }}"
+    dest: "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
+    force: no
+  when: not archiveextracted.stat.exists or remote_archive_head.x_checksum_sha256 not in archiveextracted_sha256.content|b64decode
+  register: download
+
+- set_fact:
+    is_zstd: "{{ archive.filename.endswith('.tar.zst') }}"
+    is_tar: "{{ archive.filename.endswith('.tar.gz') or archive.filename.endswith('.tar.xz') or archive.filename.endswith('.tar.bz2') }}"
+
+- set_fact:
+    is_7z: "{{ not is_zstd and not is_tar }}"
+
+- name: "{{ archive.filename }}: Extract archive if sha256 changed"
+  win_shell: >
+    7z x -aoa -mmt=on 
+    "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
+    -o"{{ archive.base_destination_directory }}"
+  when: "is_7z and (not archiveextracted.stat.exists or remote_archive_head.x_checksum_sha256 not in archiveextracted_sha256.content|b64decode)"
+  register: extract_command_status
+
+- name: "{{ archive.filename }}: Extract tar.zst archive if sha256 changed"
+  win_shell: >
+    zstd -d "{{ artifactory_downloads_directory }}/{{ archive.filename }}" -c |
+    tar -x -f - -C "{{ archive.base_destination_directory }}"
+  args:
+    executable: cmd # Powershell truncates zstd output
+  when: "is_zstd and (not archiveextracted.stat.exists or remote_archive_head.x_checksum_sha256 not in archiveextracted_sha256.content|b64decode)"
+  register: extract_tar_command_status
+
+- set_fact:
+    extract_command_status: "{{ extract_tar_command_status }}"
+  when: is_zstd
+
+- name: "{{ archive.filename }}: Extract tar archive if sha256 changed"
+  win_shell: >
+    tar -x
+    -C "{{ archive.base_destination_directory }}"
+    -f "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
+  when: is_tar and (not archiveextracted.stat.exists or remote_archive_head.x_checksum_sha256 not in archiveextracted_sha256.content|b64decode)
+  register: extract_tar_command_status
+
+- set_fact:
+    extract_command_status: "{{ extract_tar_command_status }}"
+  when: is_tar
+
+- name: "{{ archive.filename }}: Move out of base directory source"
+  win_command: >
+    robocopy 
+    "{{ archive.base_destination_directory }}/{{ archive.move_and_delete_base_directory }}/"
+    "{{ archive.base_destination_directory }}"
+    "*"
+    "/e"
+    "/move"
+    "/MT"
+    "/np"
+    "/nfl"
+  register: move_result
+  failed_when: "move_result.rc > 8"
+  when: archive.move_and_delete_base_directory is defined and extract_command_status.rc is defined and extract_command_status.rc == 0
+
+- name: "{{ archive.filename }}: Remove base directory"
+  win_file:
+    path: "{{ archive.base_destination_directory }}/{{ archive.move_and_delete_base_directory }}"
+    state: absent
+  when: archive.move_and_delete_base_directory is defined and extract_command_status.rc is defined and extract_command_status.rc == 0
+
+- name: "{{ archive.filename }}: Write sha256 file"
+  win_copy:
+    dest: "{{ artifactory_status_directory }}/{{ archive.filename }}.sha256"
+    content: "{{ remote_archive_head.x_checksum_sha256 }}"
+  when: extract_command_status.rc is defined and extract_command_status.rc == 0
+
+- name: "{{ archive.filename }}: Delete the archive if the sha256 file is there and sha256 is correct or if the extration command was successful"
+  win_file:
+    path: "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
+    state: absent
+  when: (archiveextracted.stat.exists and remote_archive_head.x_checksum_sha256 in archiveextracted_sha256.content|b64decode) or (extract_command_status.rc is defined and extract_command_status.rc == 0)
