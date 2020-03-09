@@ -1,0 +1,25 @@
+---
+- hosts: all
+  gather_facts: yes
+  tasks:
+    - name: Read platform-specific variables
+      include_vars: "{{ varfile }}"
+      with_first_found:
+        - files:
+            - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+            - "{{ ansible_distribution }}.yml"
+            - "{{ ansible_os_family }}.yml"
+            - "{{ ansible_system }}.yml"
+          skip: true
+      loop_control:
+        loop_var: varfile
+
+    - name: Connect package managers to CCDC resources
+      include_role:
+        name: ccdc-package-manager-configuration
+
+    - name: Expand archives
+      include_role:
+        name: ccdc-expand-artifactory-archives
+      vars:
+        archive_definitions: "{{ artifactory_archives }}"

@@ -1,0 +1,26 @@
+---
+base_artifactory_archive_directory: /opt/ccdc/different/artifactory-archives
+artifactory_archives:
+  # Smallish 7z file
+  - artifactory_path: ccdc-3rdparty-windows-runtime-exes
+    filename: fasta-36.3.8e.7z
+    base_destination_directory: /opt/ccdc/third-party/fasta
+  # Smallish tar.gz file
+  - artifactory_path: ccdc-3rd-party-centos-7-builds
+    filename: LexActivator-3.8.1-linux-centos7-64.tar.gz
+    base_destination_directory: /opt/ccdc/third-party/LexActivator
+  # Smallish tar.zst file
+  - artifactory_path: ccdc-3rd-party-centos-7-builds
+    filename: LexActivator-3.8.1-linux-centos7-64.tar.zst
+    base_destination_directory: /opt/ccdc/third-party/LexActivator-zst
+    move_and_delete_base_directory: LexActivator-3.8.1-linux-centos7-64
+  # Biggish zip file, contents moved
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-csd-isostar-data/
+    filename: ccdc-csd-isostar-data-540.0.zip
+    base_destination_directory: /opt/ccdc/data/csd-540/isostar_files
+    move_and_delete_base_directory: ccdc-csd-isostar-data-540.0
+  # Note the discrepancy between zip filename and the position on disk
+  - artifactory_path: ccdc-data-local/uk.ac.cam.ccdc/ccdc-csd-mogul-data/
+    filename: ccdc-csd-mogul-data-540.1.zip
+    base_destination_directory: /opt/ccdc/data/csd-540/mogul/data/Feb19
+    move_and_delete_base_directory: ccdc-csd-mogul-data-540.1
