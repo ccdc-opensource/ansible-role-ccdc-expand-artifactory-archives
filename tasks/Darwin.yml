@@ -25,6 +25,6 @@
     state: present
 
 - include: expand_archive_posix.yml
-  with_items: "{{ archive_definitions }}"
+  loop: "{{ archive_definitions }}"
   loop_control:
     loop_var: archive
