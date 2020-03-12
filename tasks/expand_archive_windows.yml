@@ -7,13 +7,13 @@
 - name: "{{ archive.filename }}: Check sh256 file is present"
   win_stat:
     path: "{{ artifactory_status_directory }}/{{ archive.filename }}.sha256"
-  register: archiveextracted
+  register: downloaded_sha256_file
 
-- name: "{{ archive.filename }}: Read sha256 from archiveextracted file if present"
+- name: "{{ archive.filename }}: Read sha256 from downloaded_sha256_file file if present"
   slurp:
     src: "{{ artifactory_status_directory }}/{{ archive.filename }}.sha256"
-  register: archiveextracted_sha256
-  when: archiveextracted.stat.exists
+  register: downloaded_sha256_file_sha256
+  when: downloaded_sha256_file.stat.exists
 
 - name: "{{ archive.filename }}: Perform a HEAD on the remote file to read sha256"
   win_uri:
@@ -21,12 +21,24 @@
     method: HEAD
   register: remote_archive_head
 
+- name: "{{ archive.filename }}: Check downloaded file is present"
+  win_stat:
+    path: "{{ artifactory_status_directory }}/{{ archive.filename }}"
+  register: downloaded_file
+
+- name: "{{ archive.filename }}: Delete the downloaded archive if the size is different"
+  win_file:
+    path: "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
+    state: absent
+  when: downloaded_file.stat.exists and remote_archive_head.content_length != downloaded_file.stat.size
+
 - name: "{{ archive.filename }}: Download file if sha256 changed"
-  win_get_url:
-    url: "{{ artifactory_base_url }}/{{ archive.artifactory_path }}/{{ archive.filename }}"
-    dest: "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
-    force: no
-  when: not archiveextracted.stat.exists or remote_archive_head.x_checksum_sha256 not in archiveextracted_sha256.content|b64decode
+  command: >
+    curl 
+    --silent --show-error
+    -o "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
+    "{{ artifactory_base_url }}/{{ archive.artifactory_path }}/{{ archive.filename }}"
+  when: not downloaded_sha256_file.stat.exists or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content|b64decode
   register: download
 
 - set_fact:
@@ -41,7 +53,7 @@
     7z x -aoa -mmt=on 
     "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
     -o"{{ archive.base_destination_directory }}"
-  when: "is_7z and (not archiveextracted.stat.exists or remote_archive_head.x_checksum_sha256 not in archiveextracted_sha256.content|b64decode)"
+  when: "is_7z and (not downloaded_sha256_file.stat.exists or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content|b64decode)"
   register: extract_command_status
 
 - name: "{{ archive.filename }}: Extract tar.zst archive if sha256 changed"
@@ -50,7 +62,7 @@
     tar -x -f - -C "{{ archive.base_destination_directory }}"
   args:
     executable: cmd # Powershell truncates zstd output
-  when: "is_zstd and (not archiveextracted.stat.exists or remote_archive_head.x_checksum_sha256 not in archiveextracted_sha256.content|b64decode)"
+  when: "is_zstd and (not downloaded_sha256_file.stat.exists or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content|b64decode)"
   register: extract_tar_command_status
 
 - set_fact:
@@ -62,7 +74,7 @@
     tar -x
     -C "{{ archive.base_destination_directory }}"
     -f "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
-  when: is_tar and (not archiveextracted.stat.exists or remote_archive_head.x_checksum_sha256 not in archiveextracted_sha256.content|b64decode)
+  when: is_tar and (not downloaded_sha256_file.stat.exists or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content|b64decode)
   register: extract_tar_command_status
 
 - set_fact:
@@ -100,4 +112,4 @@
   win_file:
     path: "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
     state: absent
-  when: (archiveextracted.stat.exists and remote_archive_head.x_checksum_sha256 in archiveextracted_sha256.content|b64decode) or (extract_command_status.rc is defined and extract_command_status.rc == 0)
+  when: (downloaded_sha256_file.stat.exists and remote_archive_head.x_checksum_sha256 in downloaded_sha256_file_sha256.content|b64decode) or (extract_command_status.rc is defined and extract_command_status.rc == 0)
