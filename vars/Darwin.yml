@@ -3,5 +3,6 @@ platform_specific_default_base_artifactory_archive_directory: /opt/ccdc/artifact
 required_packages:
   - p7zip
   - zstd
+  - curl
 p7zip_location: /usr/local/bin/7z
 zstd_location: /usr/local/bin/zstd
