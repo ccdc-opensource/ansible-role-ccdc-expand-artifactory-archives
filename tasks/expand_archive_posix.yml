@@ -38,10 +38,11 @@
   shell: >
     jfrog rt dl 
     --flat
+    --fail-no-op
     "--url={{ artifactory_base_url }}"
     "--user=ccdc-artifactory-reader"
     "--access-token={{ artifactory_ccdc_reader_access_token }}"
-    "{{ archive.artifactory_path }}/{{ archive.filename }}"
+    "{{ archive.artifactory_path | regex_replace('/$') }}/{{ archive.filename }}"
     "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
   environment:
     CI: "true"
