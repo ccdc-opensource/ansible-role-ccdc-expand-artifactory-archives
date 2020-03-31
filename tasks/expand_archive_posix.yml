@@ -35,11 +35,18 @@
   when: downloaded_file.stat.exists and remote_archive_head.content_length != downloaded_file.stat.size
 
 - name: "{{ archive.filename }}: Download file if sha256 changed"
-  command: >
-    curl 
-    --silent --show-error
-    -o "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
-    "{{ artifactory_base_url }}/{{ archive.artifactory_path }}/{{ archive.filename }}"
+  shell: >
+    jfrog rt dl 
+    --flat
+    "--url={{ artifactory_base_url }}"
+    "--user=ccdc-artifactory-reader"
+    "--access-token={{ artifactory_ccdc_reader_access_token }}"
+    "{{ archive.artifactory_path }}/{{ archive.filename }}"
+    "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
+  environment:
+    CI: "true"
+    JFROG_CLI_OFFER_CONFIG: "false"
+    JFROG_CLI_TEMP_DIR: "{{ artifactory_downloads_directory }}/tmpdir"
   when: not downloaded_sha256_file.stat.exists or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content|b64decode
   register: download
 

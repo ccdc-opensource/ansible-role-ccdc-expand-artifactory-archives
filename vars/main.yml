@@ -1,1 +1,3 @@
 ---
+# Read only token to access artifactory
+artifactory_ccdc_reader_access_token: ***REMOVED***
