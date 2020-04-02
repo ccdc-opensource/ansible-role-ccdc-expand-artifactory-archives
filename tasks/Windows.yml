@@ -9,6 +9,11 @@
     path: "{{ artifactory_downloads_directory }}"
     state: directory
 
+- name: Ensure artifactory tempdownloads archives directory is present
+  win_file:
+    path: "{{ artifactory_tempdownloads_directory }}"
+    state: directory
+
 - name: Install required tools
   win_chocolatey:
     name: "{{ required_packages }}"
