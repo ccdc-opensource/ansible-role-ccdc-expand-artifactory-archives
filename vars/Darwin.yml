@@ -4,5 +4,6 @@ required_packages:
   - p7zip
   - zstd
   - curl
+  - jfrog-cli-go
 p7zip_location: /usr/local/bin/7z
 zstd_location: /usr/local/bin/zstd
