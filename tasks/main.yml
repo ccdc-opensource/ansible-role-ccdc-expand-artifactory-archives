@@ -1,4 +1,7 @@
 ---
+- name: Set up package managers for required tools
+  include_role: ccdc-package-manager-configuration
+
 - name: Read platform-specific variables
   include_vars: "{{ varfile }}"
   with_first_found:

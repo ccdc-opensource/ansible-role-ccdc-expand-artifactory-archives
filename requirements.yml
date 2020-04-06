@@ -1,2 +1,5 @@
 ---
 - src: geerlingguy.homebrew
+- src: git@ssh.dev.azure.com:v3/ccdc/build-systems/ansible-role-ccdc-package-manager-configuration
+  scm: git
+  name: ccdc-package-manager-configuration
