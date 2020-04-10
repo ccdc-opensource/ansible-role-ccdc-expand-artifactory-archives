@@ -29,13 +29,12 @@
     state: present
   become: yes
 
-- name: Install JFrog cli on CentOS
+- name: Install JFrog cli
   get_url:
     url: https://api.bintray.com/content/jfrog/jfrog-cli-go/$latest/jfrog-cli-linux-386/jfrog?bt_package=jfrog-cli-linux-386
     dest: /usr/bin/jfrog
     mode: "u=rwx,g=rx,o=rx"
   become: yes
-  when: ansible_os_family == "RedHat"
 
 - include: expand_archive_posix.yml
   loop: "{{ archive_definitions }}"
