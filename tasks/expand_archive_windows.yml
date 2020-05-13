@@ -19,6 +19,8 @@
   win_uri:
     url: "{{ artifactory_base_url }}/{{ archive.artifactory_path }}/{{ archive.filename }}"
     method: HEAD
+    url_username: "{{ansible_deployment_artifactory_user}}"
+    url_password: "{{ansible_deployment_artifactory_key}}"
   register: remote_archive_head
 
 - name: "{{ archive.filename }}: Check downloaded file is present"
@@ -41,8 +43,8 @@
     --flat
     --fail-no-op
     "--url={{ artifactory_base_url }}"
-    "--user=ccdc-artifactory-reader"
-    "--access-token={{ artifactory_ccdc_reader_access_token }}"
+    "--user={{ ansible_deployment_artifactory_user }}"
+    "--access-token={{ ansible_deployment_artifactory_key }}"
     "{{ archive.artifactory_path | regex_replace('/$') }}/{{ archive.filename }}"
     "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
   when: not downloaded_sha256_file.stat.exists or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content|b64decode
