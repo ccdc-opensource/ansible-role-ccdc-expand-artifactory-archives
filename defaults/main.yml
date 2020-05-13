@@ -1,5 +1,5 @@
 ---
-artifactory_base_url: https://artifactory.ccdc.cam.ac.uk
+artifactory_base_url: https://artifactory.ccdc.cam.ac.uk/artifactory
 base_artifactory_archive_directory: "{{ platform_specific_default_base_artifactory_archive_directory }}"
 artifactory_status_directory: "{{ base_artifactory_archive_directory }}/status/"
 artifactory_downloads_directory: "{{ base_artifactory_archive_directory }}/downloads/"
