@@ -41,6 +41,7 @@
     jfrog rt dl 
     --flat
     --fail-no-op
+    --retries=100
     "--url={{ artifactory_base_url }}"
     "--user={{ ansible_deployment_artifactory_user }}"
     "--access-token={{ ansible_deployment_artifactory_key }}"
