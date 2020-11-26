@@ -4,5 +4,6 @@ required_packages:
   - 7zip.install
   - 7zip.portable
   - zstandard
+  - bzip2
   - curl
   - jfrog-cli

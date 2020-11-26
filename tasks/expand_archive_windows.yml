@@ -53,10 +53,11 @@
 
 - set_fact:
     is_zstd: "{{ archive.filename.endswith('.tar.zst') }}"
-    is_tar: "{{ archive.filename.endswith('.tar.gz') or archive.filename.endswith('.tar.xz') or archive.filename.endswith('.tar.bz2') }}"
+    is_bz2: "{{ archive.filename.endswith('.tar.bz2') }}"
+    is_tar: "{{ archive.filename.endswith('.tar.gz') or archive.filename.endswith('.tar.xz') }}"
 
 - set_fact:
-    is_7z: "{{ not is_zstd and not is_tar }}"
+    is_7z: "{{ not is_zstd and not is_tar and not is_bz2 }}"
 
 - name: "{{ archive.filename }}: Extract archive if sha256 changed"
   win_shell: >
@@ -78,6 +79,19 @@
 - set_fact:
     extract_command_status: "{{ extract_tar_command_status }}"
   when: is_zstd
+
+- name: "{{ archive.filename }}: Extract tar.bz2 archive if sha256 changed"
+  win_shell: >
+    bzip2 -d "{{ artifactory_downloads_directory }}/{{ archive.filename }}" -c |
+    tar -x -f - -C "{{ archive.base_destination_directory }}"
+  args:
+    executable: cmd # Powershell truncates zstd output
+  when: "is_bz2 and (not downloaded_sha256_file.stat.exists or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content|b64decode)"
+  register: extract_tar_command_status
+
+- set_fact:
+    extract_command_status: "{{ extract_tar_command_status }}"
+  when: is_bz2
 
 - name: "{{ archive.filename }}: Extract tar archive if sha256 changed"
   win_shell: >
