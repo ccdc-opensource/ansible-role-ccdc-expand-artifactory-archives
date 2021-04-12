@@ -31,7 +31,7 @@
 
 - name: Install JFrog cli
   get_url:
-    url: https://api.bintray.com/content/jfrog/jfrog-cli-go/$latest/jfrog-cli-linux-386/jfrog?bt_package=jfrog-cli-linux-386
+    url: https://releases.jfrog.io/artifactory/jfrog-cli/v1/[RELEASE]/jfrog-cli-linux-amd64/jfrog
     dest: /usr/bin/jfrog
     mode: "u=rwx,g=rx,o=rx"
   become: yes
