@@ -1,40 +1,40 @@
 ---
 - name: Ensure artifactory status archives directory is present
   file:
-    path: "{{artifactory_status_directory}}"
+    path: "{{ artifactory_status_directory }}"
     state: directory
     owner: "{{ ansible_user }}"
-    mode: '0755'
+    mode: "0755"
   become: true
 
 - name: Ensure artifactory downloads archives directory is present
   file:
-    path: "{{artifactory_downloads_directory}}"
+    path: "{{ artifactory_downloads_directory }}"
     state: directory
     owner: "{{ ansible_user }}"
-    mode: '0755'
+    mode: "0755"
   become: true
 
 - name: Ensure artifactory tempdownloads archives directory is present
   file:
-    path: "{{artifactory_tempdownloads_directory}}"
+    path: "{{ artifactory_tempdownloads_directory }}"
     state: directory
     owner: "{{ ansible_user }}"
-    mode: '0755'
+    mode: "0755"
   become: true
-  
+
 - name: Add required packages
   package:
     name: "{{ required_packages }}"
     state: present
-  become: yes
+  become: true
 
 - name: Install JFrog cli
   get_url:
     url: https://releases.jfrog.io/artifactory/jfrog-cli/v1/[RELEASE]/jfrog-cli-linux-amd64/jfrog
     dest: /usr/bin/jfrog
     mode: "u=rwx,g=rx,o=rx"
-  become: yes
+  become: true
 
 - include: expand_archive_posix.yml
   loop: "{{ archive_definitions }}"

@@ -4,7 +4,8 @@ dependencies: []
 galaxy_info:
   role_name: expand_artifactory_archives
   author: rockdreamer
-  description: Get required archives from Artifactory for CCDC build machines.
+  namespace: ccdc
+  description: Get and extract required archives from Artifactory.
   company: The Cambridge Crystallographic Data Centre
   license: "license (BSD, MIT)"
   min_ansible_version: 2.9
@@ -21,7 +22,7 @@ galaxy_info:
     - name: Ubuntu
       versions:
         - all
-    - name: Darwin
+    - name: MacOSX
       versions:
         - all
     - name: Windows

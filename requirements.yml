@@ -1,5 +1,3 @@
 ---
 - src: geerlingguy.homebrew
-- src: https://github.com/ccdc-opensource/ansible-role-ccdc-package-manager-configuration
-  scm: git
-  name: ccdc.package_manager_configuration
+- name: ccdc.package_manager_configuration
