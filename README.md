@@ -1,8 +1,8 @@
-# Ansible Role: ccdc-expand-artifactory-archives
+# Ansible Role: ccdc.expand_artifactory_archives
 
 Downloads archives from artifactory and expands them into the build machines.
 
-See [Build machine provisioning](https://confluence.ccdc.cam.ac.uk/x/6Rh_/) on confluence for more information.
+See [Build machine provisioning](https://ccdc-cambridge.atlassian.net/l/c/u6inG791) on confluence for more information.
 
 ## Role Variables
 
@@ -10,7 +10,7 @@ See [Build machine provisioning](https://confluence.ccdc.cam.ac.uk/x/6Rh_/) on c
 
     - hosts: all
       roles:
-        - ccdc-expand-artifactory-archives
+        - ccdc.expand_artifactory_archives
       vars:
         artifactory-archives:
           # Executables used by our software

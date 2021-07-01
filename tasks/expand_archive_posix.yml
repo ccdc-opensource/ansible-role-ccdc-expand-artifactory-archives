@@ -21,8 +21,8 @@
   uri:
     url: "{{ artifactory_base_url }}/{{ archive.artifactory_path }}/{{ archive.filename }}"
     method: HEAD
-    url_username: "{{ansible_deployment_artifactory_user}}"
-    url_password: "{{ansible_deployment_artifactory_key}}"
+    url_username: "{{ ansible_deployment_artifactory_user }}"
+    url_password: "{{ ansible_deployment_artifactory_key }}"
   register: remote_archive_head
 
 - name: "{{ archive.filename }}: Check downloaded file is present"
@@ -38,7 +38,7 @@
 
 - name: "{{ archive.filename }}: Download file if sha256 changed"
   shell: >
-    jfrog rt dl 
+    jfrog rt dl
     --flat
     --fail-no-op
     --retries=100
@@ -55,33 +55,37 @@
   when: not downloaded_sha256_file.stat.exists or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content|b64decode
   register: download
 
-- set_fact:
+- name: figure out archive type (part 1)
+  set_fact:
     is_zstd: "{{ archive.filename.endswith('.tar.zst') }}"
     is_tar: "{{ archive.filename.endswith('.tar.gz') or archive.filename.endswith('.tar.xz') or archive.filename.endswith('.tar.bz2') }}"
 
-- set_fact:
+- name: figure out archive type (part 2)
+  set_fact:
     is_7z: "{{ not is_zstd and not is_tar }}"
 
 - name: "{{ archive.filename }}: Extract archive if sha256 changed"
   command: >
-    "{{ p7zip_location }}" x -aoa -mmt=on 
+    "{{ p7zip_location }}" x -aoa -mmt=on
     "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
     -o"{{ archive.base_destination_directory }}"
   when: "is_7z and (not downloaded_sha256_file.stat.exists or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content|b64decode)"
   register: extract_command_status
 
-- name: "{{ archive.filename }}: Extract tar.zst archive if sha256 changed"
+- name: "{{ archive.filename }}: Extract tar.zst archive if sha256 changed" # noqa: risky-shell-pipe
   shell: >
     {{ zstd_location }} -d "{{ artifactory_downloads_directory }}/{{ archive.filename }}" -c |
     tar -x -f - -C "{{ archive.base_destination_directory }}"
   when: "is_zstd and (not downloaded_sha256_file.stat.exists or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content|b64decode)"
   register: extract_tar_command_status
 
-- set_fact:
+- name: save tar.zstd extraction command status
+  set_fact:
     extract_command_status: "{{ extract_tar_command_status }}"
   when: is_zstd
 
-- name: "{{ archive.filename }}: Extract tar archive if sha256 changed"
+# unarchive module has issues
+- name: "{{ archive.filename }}: Extract tar archive if sha256 changed" # noqa: command-instead-of-module
   command: >
     tar -x
     -C "{{ archive.base_destination_directory }}"
@@ -89,13 +93,14 @@
   when: is_tar and (not downloaded_sha256_file.stat.exists or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content|b64decode)
   register: extract_tar_command_status
 
-- set_fact:
+- name: save tar extraction command status
+  set_fact:
     extract_command_status: "{{ extract_tar_command_status }}"
   when: is_tar
 
 - name: "{{ archive.filename }}: Move out of base directory source"
   shell: >
-    mv  
+    mv
     {{ archive.base_destination_directory }}/{{ archive.move_and_delete_base_directory }}/*
     {{ archive.base_destination_directory }}/
   when: archive.move_and_delete_base_directory is defined and extract_command_status.rc is defined and extract_command_status.rc == 0
@@ -110,6 +115,7 @@
   copy:
     dest: "{{ artifactory_status_directory }}/{{ archive.filename }}.sha256"
     content: "{{ remote_archive_head.x_checksum_sha256 }}"
+    mode: u=rw,g=r,o=r
   when: extract_command_status.rc is defined and extract_command_status.rc == 0
 
 - name: "{{ archive.filename }}: Delete the archive if the sha256 file is there and sha256 is correct or if the extration command was successful"

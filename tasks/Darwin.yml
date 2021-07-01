@@ -4,7 +4,7 @@
     path: "{{ artifactory_status_directory }}"
     state: directory
     owner: "{{ ansible_user }}"
-    mode: '0755'
+    mode: "0755"
   become: true
 
 - name: Ensure artifactory downloads archives directory is present
@@ -12,17 +12,17 @@
     path: "{{ artifactory_downloads_directory }}"
     state: directory
     owner: "{{ ansible_user }}"
-    mode: '0755'
+    mode: "0755"
   become: true
 
 - name: Ensure artifactory tempdownloads archives directory is present
   file:
-    path: "{{artifactory_tempdownloads_directory}}"
+    path: "{{ artifactory_tempdownloads_directory }}"
     state: directory
     owner: "{{ ansible_user }}"
-    mode: '0755'
+    mode: "0755"
   become: true
-  
+
 - name: Install homebrew
   include_role:
     name: geerlingguy.homebrew

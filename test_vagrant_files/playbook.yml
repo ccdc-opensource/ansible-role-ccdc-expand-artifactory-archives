@@ -16,10 +16,10 @@
 
     - name: Connect package managers to CCDC resources
       include_role:
-        name: ccdc-package-manager-configuration
+        name: ccdc.package_manager_configuration
 
     - name: Expand archives
       include_role:
-        name: ccdc-expand-artifactory-archives
+        name: ccdc.expand_artifactory_archives
       vars:
         archive_definitions: "{{ artifactory_archives }}"
