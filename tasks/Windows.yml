@@ -19,7 +19,7 @@
     name: "{{ required_packages }}"
   become: true
 
-- include: expand_archive_windows.yml
+- ansible.builtin.inlude_tasks: expand_archive_windows.yml
   loop: "{{ archive_definitions }}"
   loop_control:
     loop_var: archive

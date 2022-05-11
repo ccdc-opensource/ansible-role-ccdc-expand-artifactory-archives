@@ -36,7 +36,7 @@
     mode: "u=rwx,g=rx,o=rx"
   become: true
 
-- ansible.builtin.include: expand_archive_posix.yml
+- ansible.builtin.inlude_tasks: expand_archive_posix.yml
   loop: "{{ archive_definitions }}"
   loop_control:
     loop_var: archive
