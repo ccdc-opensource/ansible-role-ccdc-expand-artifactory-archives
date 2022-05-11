@@ -15,8 +15,9 @@
     state: directory
 
 - name: Install required tools
-  win_chocolatey:
+  chocolatey.chocolatey.win_chocolatey:
     name: "{{ required_packages }}"
+  become: true
 
 - include: expand_archive_windows.yml
   loop: "{{ archive_definitions }}"
