@@ -1,22 +1,22 @@
 ---
 - name: "{{ archive.filename }}: Ensure destination directory is present"
-  win_file:
+  ansible.windows.win_file:
     path: "{{ archive.base_destination_directory }}"
     state: directory
 
 - name: "{{ archive.filename }}: Check sh256 file is present"
-  win_stat:
+  ansible.windows.win_stat:
     path: "{{ artifactory_status_directory }}/{{ archive.filename }}.sha256"
   register: downloaded_sha256_file
 
 - name: "{{ archive.filename }}: Read sha256 from downloaded_sha256_file file if present"
-  slurp:
+  ansible.builtin.slurp:
     src: "{{ artifactory_status_directory }}/{{ archive.filename }}.sha256"
   register: downloaded_sha256_file_sha256
   when: downloaded_sha256_file.stat.exists
 
 - name: "{{ archive.filename }}: Perform a HEAD on the remote file to read sha256"
-  win_uri:
+  ansible.windows.win_uri:
     url: "{{ artifactory_base_url }}/{{ archive.artifactory_path }}/{{ archive.filename }}"
     method: HEAD
     url_username: "{{ ansible_deployment_artifactory_user }}"
@@ -24,18 +24,18 @@
   register: remote_archive_head
 
 - name: "{{ archive.filename }}: Check downloaded file is present"
-  win_stat:
+  ansible.windows.win_stat:
     path: "{{ artifactory_status_directory }}/{{ archive.filename }}"
   register: downloaded_file
 
 - name: "{{ archive.filename }}: Delete the downloaded archive if the size is different"
-  win_file:
+  ansible.windows.win_file:
     path: "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
     state: absent
   when: downloaded_file.stat.exists and remote_archive_head.content_length != downloaded_file.stat.size
 
 - name: "{{ archive.filename }}: Download file if sha256 changed"
-  win_shell: >
+  ansible.windows.win_shell: >
     $env:CI = 'true';
     $env:JFROG_CLI_OFFER_CONFIG = 'false';
     $env:JFROG_CLI_TEMP_DIR = "{{ artifactory_tempdownloads_directory }}";
@@ -52,17 +52,17 @@
   register: download
 
 - name: Find archive type (part 1)
-  set_fact:
+  ansible.builtin.set_fact:
     is_zstd: "{{ archive.filename.endswith('.tar.zst') }}"
     is_bz2: "{{ archive.filename.endswith('.tar.bz2') }}"
     is_tar: "{{ archive.filename.endswith('.tar.gz') or archive.filename.endswith('.tar.xz') }}"
 
 - name: Find archive type (part 2)
-  set_fact:
+  ansible.builtin.set_fact:
     is_7z: "{{ not is_zstd and not is_tar and not is_bz2 }}"
 
 - name: "{{ archive.filename }}: Extract archive if sha256 changed"
-  win_shell: >
+  ansible.windows.win_shell: >
     7z x -aoa -mmt=on
     "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
     -o"{{ archive.base_destination_directory }}"
@@ -70,7 +70,7 @@
   register: extract_command_status
 
 - name: "{{ archive.filename }}: Extract tar.zst archive if sha256 changed"
-  win_shell: >
+  ansible.windows.win_shell: >
     zstd -d "{{ artifactory_downloads_directory }}/{{ archive.filename }}" -c |
     tar -x -f - -C "{{ archive.base_destination_directory }}"
   args:
@@ -79,12 +79,12 @@
   register: extract_tar_command_status
 
 - name: save tar.zstd extraction command status
-  set_fact:
+  ansible.builtin.set_fact:
     extract_command_status: "{{ extract_tar_command_status }}"
   when: is_zstd
 
 - name: "{{ archive.filename }}: Extract tar.bz2 archive if sha256 changed"
-  win_shell: >
+  ansible.windows.win_shell: >
     bzip2 -d "{{ artifactory_downloads_directory }}/{{ archive.filename }}" -c |
     tar -x -f - -C "{{ archive.base_destination_directory }}"
   args:
@@ -93,12 +93,12 @@
   register: extract_tar_command_status
 
 - name: save tar.bz2 extraction command status
-  set_fact:
+  ansible.builtin.set_fact:
     extract_command_status: "{{ extract_tar_command_status }}"
   when: is_bz2
 
 - name: "{{ archive.filename }}: Extract tar archive if sha256 changed"
-  win_shell: >
+  ansible.windows.win_shell: >
     tar -x
     -C "{{ archive.base_destination_directory }}"
     -f "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
@@ -106,12 +106,12 @@
   register: extract_tar_command_status
 
 - name: save tar extraction command status
-  set_fact:
+  ansible.builtin.set_fact:
     extract_command_status: "{{ extract_tar_command_status }}"
   when: is_tar
 
 - name: "{{ archive.filename }}: Move out of base directory source"
-  win_command: >
+  ansible.windows.win_command: >
     robocopy
     "{{ archive.base_destination_directory }}/{{ archive.move_and_delete_base_directory }}/"
     "{{ archive.base_destination_directory }}"
@@ -126,19 +126,19 @@
   when: archive.move_and_delete_base_directory is defined and extract_command_status.rc is defined and extract_command_status.rc == 0
 
 - name: "{{ archive.filename }}: Remove base directory"
-  win_file:
+  ansible.windows.win_file:
     path: "{{ archive.base_destination_directory }}/{{ archive.move_and_delete_base_directory }}"
     state: absent
   when: archive.move_and_delete_base_directory is defined and extract_command_status.rc is defined and extract_command_status.rc == 0
 
 - name: "{{ archive.filename }}: Write sha256 file"
-  win_copy:
+  ansible.windows.win_copy:
     dest: "{{ artifactory_status_directory }}/{{ archive.filename }}.sha256"
     content: "{{ remote_archive_head.x_checksum_sha256 }}"
   when: extract_command_status.rc is defined and extract_command_status.rc == 0
 
 - name: "{{ archive.filename }}: Delete the archive if the sha256 file is there and sha256 is correct or if the extration command was successful"
-  win_file:
+  ansible.windows.win_file:
     path: "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
     state: absent
   when: (downloaded_sha256_file.stat.exists and remote_archive_head.x_checksum_sha256 in downloaded_sha256_file_sha256.content|b64decode) or (extract_command_status.rc is defined and extract_command_status.rc == 0)

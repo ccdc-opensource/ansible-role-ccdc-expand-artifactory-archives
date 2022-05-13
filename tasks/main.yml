@@ -1,10 +1,10 @@
 ---
 - name: Set up package managers for required tools
-  include_role:
+  ansible.builtin.include_role:
     name: ccdc.package_manager_configuration
 
 - name: Read platform-specific variables
-  include_vars: "{{ varfile }}"
+  ansible.builtin.include_vars: "{{ varfile }}"
   with_first_found:
     - files:
         - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
@@ -16,7 +16,7 @@
     loop_var: varfile
 
 - name: Expand artifactory archives (Platform specific)
-  include_tasks: "{{ taskfile }}"
+  ansible.builtin.include_tasks: "{{ taskfile }}"
   with_first_found:
     - files:
         - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"

@@ -56,6 +56,3 @@ rules:
   line-length:
     # Defaults
     max: 220
-
-  # Disabling due to become: true being used pervasively in roles
-  truthy: disable

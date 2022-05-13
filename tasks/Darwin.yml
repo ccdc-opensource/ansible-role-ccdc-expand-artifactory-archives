@@ -1,6 +1,6 @@
 ---
 - name: Ensure artifactory status archives directory is present
-  file:
+  ansible.builtin.file:
     path: "{{ artifactory_status_directory }}"
     state: directory
     owner: "{{ ansible_user }}"
@@ -8,7 +8,7 @@
   become: true
 
 - name: Ensure artifactory downloads archives directory is present
-  file:
+  ansible.builtin.file:
     path: "{{ artifactory_downloads_directory }}"
     state: directory
     owner: "{{ ansible_user }}"
@@ -16,7 +16,7 @@
   become: true
 
 - name: Ensure artifactory tempdownloads archives directory is present
-  file:
+  ansible.builtin.file:
     path: "{{ artifactory_tempdownloads_directory }}"
     state: directory
     owner: "{{ ansible_user }}"
@@ -24,15 +24,15 @@
   become: true
 
 - name: Install homebrew
-  include_role:
+  ansible.builtin.include_role:
     name: geerlingguy.homebrew
 
 - name: Add required packages
-  homebrew:
+  community.general.homebrew:
     name: "{{ required_packages }}"
     state: present
 
-- include: expand_archive_posix.yml
+- ansible.builtin.include_tasks: expand_archive_posix.yml
   loop: "{{ archive_definitions }}"
   loop_control:
     loop_var: archive

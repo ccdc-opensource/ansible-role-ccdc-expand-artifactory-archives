@@ -1,9 +1,9 @@
 ---
 - hosts: all
-  gather_facts: yes
+  gather_facts: true
   tasks:
     - name: Read platform-specific variables
-      include_vars: "{{ varfile }}"
+      ansible.builtin.include_vars: "{{ varfile }}"
       with_first_found:
         - files:
             - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
@@ -15,11 +15,11 @@
         loop_var: varfile
 
     - name: Connect package managers to CCDC resources
-      include_role:
+      ansible.builtin.include_role:
         name: ccdc.package_manager_configuration
 
     - name: Expand archives
-      include_role:
+      ansible.builtin.include_role:
         name: ccdc.expand_artifactory_archives
       vars:
         archive_definitions: "{{ artifactory_archives }}"

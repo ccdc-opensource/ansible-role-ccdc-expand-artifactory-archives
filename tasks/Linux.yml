@@ -1,6 +1,6 @@
 ---
 - name: Ensure artifactory status archives directory is present
-  file:
+  ansible.builtin.file:
     path: "{{ artifactory_status_directory }}"
     state: directory
     owner: "{{ ansible_user }}"
@@ -8,7 +8,7 @@
   become: true
 
 - name: Ensure artifactory downloads archives directory is present
-  file:
+  ansible.builtin.file:
     path: "{{ artifactory_downloads_directory }}"
     state: directory
     owner: "{{ ansible_user }}"
@@ -16,7 +16,7 @@
   become: true
 
 - name: Ensure artifactory tempdownloads archives directory is present
-  file:
+  ansible.builtin.file:
     path: "{{ artifactory_tempdownloads_directory }}"
     state: directory
     owner: "{{ ansible_user }}"
@@ -24,19 +24,19 @@
   become: true
 
 - name: Add required packages
-  package:
+  ansible.builtin.package:
     name: "{{ required_packages }}"
     state: present
   become: true
 
 - name: Install JFrog cli
-  get_url:
+  ansible.builtin.get_url:
     url: https://releases.jfrog.io/artifactory/jfrog-cli/v1/[RELEASE]/jfrog-cli-linux-amd64/jfrog
     dest: /usr/bin/jfrog
     mode: "u=rwx,g=rx,o=rx"
   become: true
 
-- include: expand_archive_posix.yml
+- ansible.builtin.include_tasks: expand_archive_posix.yml
   loop: "{{ archive_definitions }}"
   loop_control:
     loop_var: archive
