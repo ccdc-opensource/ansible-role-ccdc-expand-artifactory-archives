@@ -100,8 +100,8 @@
 
 - name: "{{ archive.filename }}: Move out of base directory source"
   ansible.builtin.shell: >
-    mv
-    {{ archive.base_destination_directory }}/{{ archive.move_and_delete_base_directory }}/*
+    rsync -a
+    {{ archive.base_destination_directory }}/{{ archive.move_and_delete_base_directory }}/
     {{ archive.base_destination_directory }}/
   when: archive.move_and_delete_base_directory is defined and extract_command_status.rc is defined and extract_command_status.rc == 0
 
