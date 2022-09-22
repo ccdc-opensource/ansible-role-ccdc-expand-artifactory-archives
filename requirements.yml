@@ -1,7 +1,7 @@
 ---
 roles:
-- geerlingguy.homebrew
-- ccdc.package_manager_configuration
+- name: geerlingguy.homebrew
+- name: ccdc.package_manager_configuration
 
 collections:
-- ansible.posix
+- name: ansible.posix
