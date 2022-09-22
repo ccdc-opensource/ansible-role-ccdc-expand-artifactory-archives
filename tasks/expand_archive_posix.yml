@@ -89,7 +89,7 @@
     is_7z
     and (not downloaded_sha256_file.stat.exists
          or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
-         or not destination_directory.stat.exists or destination_directory_files.matched == 0)"
+         or not destination_directory.stat.exists or destination_directory_files.matched == 0)
   register: extract_command_status
 
 - name: "{{ archive.filename }}: Extract tar.zst archive if sha256 changed" # noqa: risky-shell-pipe
@@ -100,7 +100,7 @@
     is_zstd
     and (not downloaded_sha256_file.stat.exists
          or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
-         or not destination_directory.stat.exists or destination_directory_files.matched == 0)"
+         or not destination_directory.stat.exists or destination_directory_files.matched == 0)
   register: extract_tar_command_status
 
 - name: Save tar.zstd extraction command status
