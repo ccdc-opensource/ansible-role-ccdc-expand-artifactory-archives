@@ -4,10 +4,18 @@
     path: "{{ archive.base_destination_directory }}"
   register: destination_directory
 
-- name: "{{ archive.filename }}: Check if destination directory is empty"
+- name: "{{ archive.filename }}: Check if destination directory has files"
   ansible.builtin.win_find:
-    path: "{{ archive.base_destination_directory }}"
+    paths: "{{ archive.base_destination_directory }}"
+    file_type: file
   register: destination_directory_files
+  when: destination_directory.stat.exists
+
+- name: "{{ archive.filename }}: Check if destination directory has subdirectories"
+  ansible.builtin.win_find:
+    paths: "{{ archive.base_destination_directory }}"
+    file_type: directory
+  register: destination_directory_subdirs
   when: destination_directory.stat.exists
 
 - name: "{{ archive.filename }}: Ensure destination directory is present"
@@ -84,7 +92,7 @@
     and (not downloaded_sha256_file.stat.exists
          or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
          or not destination_directory.stat.exists
-         or destination_directory_files.matched == 0)
+         or (destination_directory_files.matched == 0 and destination_directory_subdirs.matched == 0))
   register: extract_command_status
 
 - name: "{{ archive.filename }}: Extract tar.zst archive if sha256 changed"
@@ -98,7 +106,7 @@
     and (not downloaded_sha256_file.stat.exists
          or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
          or not destination_directory.stat.exists
-         or destination_directory_files.matched == 0)
+         or (destination_directory_files.matched == 0 and destination_directory_subdirs.matched == 0))
   register: extract_tar_command_status
 
 - name: Save tar.zstd extraction command status
@@ -117,7 +125,7 @@
     and (not downloaded_sha256_file.stat.exists
          or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
          or not destination_directory.stat.exists
-         or destination_directory_files.matched == 0)
+         or (destination_directory_files.matched == 0 and destination_directory_subdirs.matched == 0))
   register: extract_tar_command_status
 
 - name: Save tar.bz2 extraction command status

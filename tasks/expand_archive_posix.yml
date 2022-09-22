@@ -6,7 +6,8 @@
 
 - name: "{{ archive.filename }}: Check if destination directory is empty"
   ansible.builtin.find:
-    path: "{{ archive.base_destination_directory }}"
+    paths: "{{ archive.base_destination_directory }}"
+    file_type: any
   register: destination_directory_files
   when: destination_directory.stat.exists
 
