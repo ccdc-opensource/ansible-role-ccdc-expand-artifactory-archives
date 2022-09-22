@@ -32,7 +32,8 @@
     name: "{{ required_packages }}"
     state: present
 
-- ansible.builtin.include_tasks: expand_archive_posix.yml
+- name: Get and expand archives
+  ansible.builtin.include_tasks: expand_archive_posix.yml
   loop: "{{ archive_definitions }}"
   loop_control:
     loop_var: archive
