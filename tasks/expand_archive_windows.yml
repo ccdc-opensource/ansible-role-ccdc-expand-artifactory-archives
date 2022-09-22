@@ -1,4 +1,15 @@
 ---
+- name: "{{ archive.filename }}: Check if destination directory is present"
+  ansible.builtin.win_stat:
+    path: "{{ archive.base_destination_directory }}"
+  register: destination_directory
+
+- name: "{{ archive.filename }}: Check if destination directory is empty"
+  ansible.builtin.win_find:
+    path: "{{ archive.base_destination_directory }}"
+  register: destination_directory_files
+  when: destination_directory.stat.exists
+
 - name: "{{ archive.filename }}: Ensure destination directory is present"
   ansible.windows.win_file:
     path: "{{ archive.base_destination_directory }}"
@@ -66,7 +77,7 @@
     7z x -aoa -mmt=on
     "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
     -o"{{ archive.base_destination_directory }}"
-  when: "is_7z and (not downloaded_sha256_file.stat.exists or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content|b64decode)"
+  when: "is_7z and (not downloaded_sha256_file.stat.exists or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content|b64decode or not destination_directory.stat.exists or destination_directory_files.matched == 0)"
   register: extract_command_status
 
 - name: "{{ archive.filename }}: Extract tar.zst archive if sha256 changed"
@@ -75,7 +86,7 @@
     tar -x -f - -C "{{ archive.base_destination_directory }}"
   args:
     executable: cmd # Powershell truncates zstd output
-  when: "is_zstd and (not downloaded_sha256_file.stat.exists or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content|b64decode)"
+  when: "is_zstd and (not downloaded_sha256_file.stat.exists or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content|b64decode or not destination_directory.stat.exists or destination_directory_files.matched == 0)"
   register: extract_tar_command_status
 
 - name: save tar.zstd extraction command status
@@ -89,7 +100,7 @@
     tar -x -f - -C "{{ archive.base_destination_directory }}"
   args:
     executable: cmd # Powershell truncates zstd output
-  when: "is_bz2 and (not downloaded_sha256_file.stat.exists or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content|b64decode)"
+  when: "is_bz2 and (not downloaded_sha256_file.stat.exists or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content|b64decode or not destination_directory.stat.exists or destination_directory_files.matched == 0)"
   register: extract_tar_command_status
 
 - name: save tar.bz2 extraction command status
