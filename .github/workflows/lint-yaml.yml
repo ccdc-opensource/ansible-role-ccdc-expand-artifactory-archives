@@ -1,5 +1,5 @@
 ---
-name: Lint Ansible role
+name: Lint YAML
 on: # yamllint disable-line rule:truthy
   workflow_dispatch:
   push:
@@ -12,7 +12,7 @@ on: # yamllint disable-line rule:truthy
       - '**/*.yaml'
 
 jobs:
-  ansible-lint:
+  yamllint:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,13 +26,8 @@ jobs:
               echo "REVIEWDOG_REPORTER=github-check" >> $GITHUB_ENV
           fi
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-
-      - name: Run ansible-lint
-        uses: reviewdog/action-ansiblelint@v1
+      - name: Run yamllint
+        uses: reviewdog/action-yamllint@v1
         with:
           fail_on_error: true
           filter_mode: nofilter

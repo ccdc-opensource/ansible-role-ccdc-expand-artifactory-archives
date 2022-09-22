@@ -63,15 +63,20 @@
     CI: "true"
     JFROG_CLI_OFFER_CONFIG: "false"
     JFROG_CLI_TEMP_DIR: "{{ artifactory_tempdownloads_directory }}"
-  when: not downloaded_sha256_file.stat.exists or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content|b64decode
+  when: >
+    not downloaded_sha256_file.stat.exists
+    or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
   register: download
 
-- name: figure out archive type (part 1)
+- name: Figure out archive type (part 1)
   ansible.builtin.set_fact:
     is_zstd: "{{ archive.filename.endswith('.tar.zst') }}"
-    is_tar: "{{ archive.filename.endswith('.tar.gz') or archive.filename.endswith('.tar.xz') or archive.filename.endswith('.tar.bz2') }}"
+    is_tar: >
+      "{{ archive.filename.endswith('.tar.gz')
+      or archive.filename.endswith('.tar.xz')
+      or archive.filename.endswith('.tar.bz2') }}"
 
-- name: figure out archive type (part 2)
+- name: Figure out archive type (part 2)
   ansible.builtin.set_fact:
     is_7z: "{{ not is_zstd and not is_tar }}"
 
@@ -80,17 +85,25 @@
     "{{ p7zip_location }}" x -aoa -mmt=on
     "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
     -o"{{ archive.base_destination_directory }}"
-  when: "is_7z and (not downloaded_sha256_file.stat.exists or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content|b64decode or not destination_directory.stat.exists or destination_directory_files.matched == 0)"
+  when: >
+    is_7z
+    and (not downloaded_sha256_file.stat.exists
+         or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
+         or not destination_directory.stat.exists or destination_directory_files.matched == 0)
   register: extract_command_status
 
 - name: "{{ archive.filename }}: Extract tar.zst archive if sha256 changed" # noqa: risky-shell-pipe
   ansible.builtin.shell: >
     {{ zstd_location }} -d "{{ artifactory_downloads_directory }}/{{ archive.filename }}" -c |
     tar -x -f - -C "{{ archive.base_destination_directory }}"
-  when: "is_zstd and (not downloaded_sha256_file.stat.exists or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content|b64decode or not destination_directory.stat.exists or destination_directory_files.matched == 0)"
+  when: >
+    is_zstd
+    and (not downloaded_sha256_file.stat.exists
+         or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
+         or not destination_directory.stat.exists or destination_directory_files.matched == 0)
   register: extract_tar_command_status
 
-- name: save tar.zstd extraction command status
+- name: Save tar.zstd extraction command status
   ansible.builtin.set_fact:
     extract_command_status: "{{ extract_tar_command_status }}"
   when: is_zstd
@@ -101,26 +114,35 @@
     tar -x
     -C "{{ archive.base_destination_directory }}"
     -f "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
-  when: is_tar and (not downloaded_sha256_file.stat.exists or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content|b64decode or not destination_directory.stat.exists or destination_directory_files.matched == 0)
+  when: >
+    is_tar
+    and (not downloaded_sha256_file.stat.exists
+         or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
+         or not destination_directory.stat.exists or destination_directory_files.matched == 0)
   register: extract_tar_command_status
 
-- name: save tar extraction command status
+- name: Save tar extraction command status
   ansible.builtin.set_fact:
     extract_command_status: "{{ extract_tar_command_status }}"
   when: is_tar
 
 - name: "{{ archive.filename }}: Move out of base directory source"
-  ansible.builtin.shell: >
-    rsync -a
-    {{ archive.base_destination_directory }}/{{ archive.move_and_delete_base_directory }}/
-    {{ archive.base_destination_directory }}/
-  when: archive.move_and_delete_base_directory is defined and extract_command_status.rc is defined and extract_command_status.rc == 0
+  ansible.posix.synchronize:
+    src: "{{ archive.base_destination_directory }}/{{ archive.move_and_delete_base_directory }}/"
+    dest: "{{ archive.base_destination_directory }}/"
+  when: >
+    archive.move_and_delete_base_directory is defined
+    and extract_command_status.rc is defined
+    and extract_command_status.rc == 0
 
 - name: "{{ archive.filename }}: Remove base directory"
   ansible.builtin.file:
     path: "{{ archive.base_destination_directory }}/{{ archive.move_and_delete_base_directory }}"
     state: absent
-  when: archive.move_and_delete_base_directory is defined and extract_command_status.rc is defined and extract_command_status.rc == 0
+  when: >
+    archive.move_and_delete_base_directory is defined
+    and extract_command_status.rc is defined
+    and extract_command_status.rc == 0
 
 - name: "{{ archive.filename }}: Write sha256 file"
   ansible.builtin.copy:
@@ -129,8 +151,11 @@
     mode: u=rw,g=r,o=r
   when: extract_command_status.rc is defined and extract_command_status.rc == 0
 
-- name: "{{ archive.filename }}: Delete the archive if the sha256 file is there and sha256 is correct or if the extration command was successful"
+- name: "{{ archive.filename }}: Delete archive if sha256 is correct or extraction was successful"
   ansible.builtin.file:
     path: "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
     state: absent
-  when: (downloaded_sha256_file.stat.exists and remote_archive_head.x_checksum_sha256 in downloaded_sha256_file_sha256.content|b64decode) or (extract_command_status.rc is defined and extract_command_status.rc == 0)
+  when: >
+    (downloaded_sha256_file.stat.exists
+     and remote_archive_head.x_checksum_sha256 in downloaded_sha256_file_sha256.content | b64decode)
+    or (extract_command_status.rc is defined and extract_command_status.rc == 0)

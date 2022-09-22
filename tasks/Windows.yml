@@ -19,7 +19,8 @@
     name: "{{ required_packages }}"
   become: true
 
-- ansible.builtin.include_tasks: expand_archive_windows.yml
+- name: Get and expand archives
+  ansible.builtin.include_tasks: expand_archive_windows.yml
   loop: "{{ archive_definitions }}"
   loop_control:
     loop_var: archive

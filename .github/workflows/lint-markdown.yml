@@ -1,18 +1,16 @@
 ---
-name: Lint Ansible role
+name: Lint Markdown
 on: # yamllint disable-line rule:truthy
   workflow_dispatch:
   push:
     paths:
-      - '**/*.yml'
-      - '**/*.yaml'
+      - '**/*.md'
   pull_request:
     paths:
-      - '**/*.yml'
-      - '**/*.yaml'
+      - '**/*.md'
 
 jobs:
-  ansible-lint:
+  markdownlint:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,13 +24,8 @@ jobs:
               echo "REVIEWDOG_REPORTER=github-check" >> $GITHUB_ENV
           fi
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-
-      - name: Run ansible-lint
-        uses: reviewdog/action-ansiblelint@v1
+      - name: Run markdownlint
+        uses: reviewdog/action-markdownlint@v0
         with:
           fail_on_error: true
           filter_mode: nofilter
