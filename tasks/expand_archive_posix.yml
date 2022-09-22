@@ -48,7 +48,7 @@
     state: absent
   when: downloaded_file.stat.exists and remote_archive_head.content_length != downloaded_file.stat.size
 
-- name: "{{ archive.filename }}: Download file if sha256 changed"
+- name: "{{ archive.filename }}: Download file if sha256 changed or destination directory is new"
   ansible.builtin.shell: >
     jfrog rt dl
     --flat
@@ -67,6 +67,8 @@
   when: >
     not downloaded_sha256_file.stat.exists
     or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
+    or not destination_directory.stat.exists
+    or destination_directory_files.matched == 0
   register: download
 
 - name: Figure out archive type (part 1)
