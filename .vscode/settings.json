@@ -1,0 +1,9 @@
+{
+    "triggerTaskOnSave.tasks": {
+        "ansible-lint": ["*.yml", "*.yaml"],
+        "yamllint": ["*.yml", "*.yaml"],
+        "flake8": ["*.py"],
+        "markdownlint": ["*.md"],
+    },
+    "triggerTaskOnSave.showNotifications": true
+}
