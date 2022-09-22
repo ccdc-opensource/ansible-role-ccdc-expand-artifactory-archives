@@ -1,5 +1,6 @@
 ---
-- hosts: all
+- name: Test ccdc.expand_artifactory_archives role
+  hosts: all
   gather_facts: true
   tasks:
     - name: Read platform-specific variables
