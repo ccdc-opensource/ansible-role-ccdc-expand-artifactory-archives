@@ -130,7 +130,7 @@
   when: is_tar
 
 - name: "{{ archive.filename }}: Move out of base directory source"
-  ansible.posix.synchronize:
+  ansible.builtin.copy:
     src: "{{ archive.base_destination_directory }}/{{ archive.move_and_delete_base_directory }}/"
     dest: "{{ archive.base_destination_directory }}/"
   when: >
