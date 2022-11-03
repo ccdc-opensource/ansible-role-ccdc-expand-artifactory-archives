@@ -133,7 +133,8 @@
   ansible.builtin.copy:
     src: "{{ archive.base_destination_directory }}/{{ archive.move_and_delete_base_directory }}/"
     dest: "{{ archive.base_destination_directory }}/"
-    mode: 0644
+    remote_src: true
+    mode: preserve
   when: >
     archive.move_and_delete_base_directory is defined
     and extract_command_status.rc is defined
