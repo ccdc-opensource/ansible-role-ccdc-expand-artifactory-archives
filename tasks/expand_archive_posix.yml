@@ -74,16 +74,13 @@
 - name: Figure out archive type (part 1)
   ansible.builtin.set_fact:
     is_zstd: "{{ archive.filename.endswith('.tar.zst') }}"
-    is_tar: >
-      "{{ archive.filename.endswith('.tar.gz')
-      or archive.filename.endswith('.tar.xz')
-      or archive.filename.endswith('.tar.bz2') }}"
+    is_tar: "{{ archive.filename.endswith('.tar.gz') or archive.filename.endswith('.tar.xz') or archive.filename.endswith('.tar.bz2') }}"
 
 - name: Figure out archive type (part 2)
   ansible.builtin.set_fact:
     is_7z: "{{ not is_zstd and not is_tar }}"
 
-- name: "{{ archive.filename }}: Extract archive if sha256 changed"
+- name: "{{ archive.filename }}: Extract 7z / zip archive if sha256 changed"
   ansible.builtin.command: >
     "{{ p7zip_location }}" x -aoa -mmt=on
     "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
