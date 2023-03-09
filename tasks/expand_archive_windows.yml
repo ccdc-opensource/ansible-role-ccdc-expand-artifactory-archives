@@ -64,7 +64,7 @@
     --retries=100
     "--url={{ artifactory_base_url }}"
     "--user={{ ansible_deployment_artifactory_user }}"
-    "--access-token={{ ansible_deployment_artifactory_key }}"
+    "--password={{ ansible_deployment_artifactory_key }}"
     "{{ archive.artifactory_path | regex_replace('/$') }}/{{ archive.filename }}"
     "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
   when: >
