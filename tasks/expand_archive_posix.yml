@@ -50,7 +50,7 @@
 
 - name: "{{ archive.filename }}: Download file if sha256 changed or destination directory is new"
   ansible.builtin.shell: >
-    jfrog rt dl
+    {{ jfrog_cli_command }} rt dl
     --flat
     --fail-no-op
     --retries=100
