@@ -4,3 +4,4 @@ base_artifactory_archive_directory: "{{ platform_specific_default_base_artifacto
 artifactory_status_directory: "{{ base_artifactory_archive_directory }}/status/"
 artifactory_downloads_directory: "{{ base_artifactory_archive_directory }}/downloads/"
 artifactory_tempdownloads_directory: "{{ base_artifactory_archive_directory }}/tmpdownloads/"
+jfrog_cli_command: "jfrog"
