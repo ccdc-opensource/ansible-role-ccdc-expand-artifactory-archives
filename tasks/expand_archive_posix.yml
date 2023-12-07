@@ -33,6 +33,7 @@
   ansible.builtin.uri:
     url: "{{ artifactory_base_url }}/{{ archive.artifactory_path }}/{{ archive.filename }}"
     method: HEAD
+    timeout: 60
     url_username: "{{ ansible_deployment_artifactory_user }}"
     url_password: "{{ ansible_deployment_artifactory_key }}"
   register: remote_archive_head
