@@ -58,7 +58,7 @@
     $env:CI = 'true';
     $env:JFROG_CLI_OFFER_CONFIG = 'false';
     $env:JFROG_CLI_TEMP_DIR = "{{ artifactory_tempdownloads_directory }}";
-    jfrog rt dl
+    {{ jfrog_cli_command }} rt dl
     --flat
     --fail-no-op
     --retries=100
