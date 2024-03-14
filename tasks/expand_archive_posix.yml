@@ -138,7 +138,7 @@
 - name: "{{ archive.filename }}: Set permissions for extracted files"  # noqa: name[template]
   when: not is_tar or archive.contents_mode is defined
   ansible.builtin.file:
-    mode: "{{ archive.contents_mode | default('0755') }}"
+    mode: "{{ archive.contents_mode | default('0644') }}"
     dest: "{{ archive.base_destination_directory }}"
     recurse: true
   become: true
