@@ -1,35 +1,35 @@
 ---
-- name: "{{ archive.filename }}: Check if destination directory is present"
+- name: "{{ archive.filename }}: Check if destination directory is present"  # noqa: name[template]
   ansible.builtin.stat:
     path: "{{ archive.base_destination_directory }}"
   register: destination_directory
 
-- name: "{{ archive.filename }}: Check if destination directory is empty"
+- name: "{{ archive.filename }}: Check if destination directory is empty"  # noqa: name[template]
   ansible.builtin.find:
     paths: "{{ archive.base_destination_directory }}"
     file_type: any
   register: destination_directory_files
   when: destination_directory.stat.exists
 
-- name: "{{ archive.filename }}: Ensure destination directory is present"
+- name: "{{ archive.filename }}: Ensure destination directory is present"  # noqa: name[template]
   ansible.builtin.file:
     path: "{{ archive.base_destination_directory }}"
     state: directory
     owner: "{{ ansible_user }}"
     mode: "0755"
 
-- name: "{{ archive.filename }}: Check sh256 file is present"
+- name: "{{ archive.filename }}: Check sha256 file is present"  # noqa: name[template]
   ansible.builtin.stat:
     path: "{{ artifactory_status_directory }}/{{ archive.filename }}.sha256"
   register: downloaded_sha256_file
 
-- name: "{{ archive.filename }}: Read sha256 from downloaded_sha256_file file if present"
+- name: "{{ archive.filename }}: Read sha256 from downloaded_sha256_file file if present"  # noqa: name[template]
   ansible.builtin.slurp:
     src: "{{ artifactory_status_directory }}/{{ archive.filename }}.sha256"
   register: downloaded_sha256_file_sha256
   when: downloaded_sha256_file.stat.exists
 
-- name: "{{ archive.filename }}: Perform a HEAD on the remote file to read sha256"
+- name: "{{ archive.filename }}: Perform a HEAD on the remote file to read sha256"  # noqa: name[template]
   ansible.builtin.uri:
     url: "{{ artifactory_base_url }}/{{ archive.artifactory_path }}/{{ archive.filename }}"
     method: HEAD
@@ -38,18 +38,18 @@
     url_password: "{{ ansible_deployment_artifactory_key }}"
   register: remote_archive_head
 
-- name: "{{ archive.filename }}: Check downloaded file is present"
+- name: "{{ archive.filename }}: Check downloaded file is present"  # noqa: name[template]
   ansible.builtin.stat:
     path: "{{ artifactory_status_directory }}/{{ archive.filename }}"
   register: downloaded_file
 
-- name: "{{ archive.filename }}: Delete the downloaded archive if the size is different"
+- name: "{{ archive.filename }}: Delete the downloaded archive if the size is different"  # noqa: name[template]
   ansible.builtin.file:
     path: "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
     state: absent
   when: downloaded_file.stat.exists and remote_archive_head.content_length != downloaded_file.stat.size
 
-- name: "{{ archive.filename }}: Download file if sha256 changed or destination directory is new"
+- name: "{{ archive.filename }}: Download file if sha256 changed or destination directory is new"  # noqa: no-changed-when name[template]
   ansible.builtin.shell: >
     {{ jfrog_cli_command }} rt dl
     --flat
@@ -72,16 +72,16 @@
     or destination_directory_files.matched == 0
   register: download
 
-- name: Figure out archive type (part 1)
+- name: "{{ archive.filename }}: Determine archive type (part 1)"  # noqa: name[template]
   ansible.builtin.set_fact:
     is_zstd: "{{ archive.filename.endswith('.tar.zst') }}"
     is_tar: "{{ archive.filename.endswith('.tar.gz') or archive.filename.endswith('.tar.xz') or archive.filename.endswith('.tar.bz2') }}"
 
-- name: Figure out archive type (part 2)
+- name: "{{ archive.filename }}: Determine archive type (part 2)"  # noqa: name[template]
   ansible.builtin.set_fact:
     is_7z: "{{ not is_zstd and not is_tar }}"
 
-- name: "{{ archive.filename }}: Extract 7z / zip archive if sha256 changed"
+- name: "{{ archive.filename }}: Extract 7z / zip archive if sha256 changed"  # noqa: no-changed-when name[template]
   ansible.builtin.command: >
     "{{ p7zip_location }}" x -aoa -mmt=on
     "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
@@ -93,7 +93,7 @@
          or not destination_directory.stat.exists or destination_directory_files.matched == 0)
   register: extract_command_status
 
-- name: "{{ archive.filename }}: Extract tar.zst archive if sha256 changed" # noqa: risky-shell-pipe
+- name: "{{ archive.filename }}: Extract tar.zst archive if sha256 changed" # noqa: no-changed-when risky-shell-pipe name[template]
   ansible.builtin.shell: >
     {{ zstd_location }} -d "{{ artifactory_downloads_directory }}/{{ archive.filename }}" -c |
     tar -x -f - -C "{{ archive.base_destination_directory }}"
@@ -104,13 +104,13 @@
          or not destination_directory.stat.exists or destination_directory_files.matched == 0)
   register: extract_tar_command_status
 
-- name: Save tar.zstd extraction command status
+- name: "{{ archive.filename }}: Save tar.zstd extraction command status"  # noqa: name[template]
   ansible.builtin.set_fact:
     extract_command_status: "{{ extract_tar_command_status }}"
   when: is_zstd
 
 # unarchive module has issues
-- name: "{{ archive.filename }}: Extract tar archive if sha256 changed" # noqa: command-instead-of-module
+- name: "{{ archive.filename }}: Extract tar archive if sha256 changed" # noqa: no-changed-when command-instead-of-module name[template]
   ansible.builtin.command: >
     tar -x
     -C "{{ archive.base_destination_directory }}"
@@ -122,12 +122,12 @@
          or not destination_directory.stat.exists or destination_directory_files.matched == 0)
   register: extract_tar_command_status
 
-- name: Save tar extraction command status
+- name: "{{ archive.filename }}: Save tar extraction command status"  # noqa: name[template]
   ansible.builtin.set_fact:
     extract_command_status: "{{ extract_tar_command_status }}"
   when: is_tar
 
-- name: "{{ archive.filename }}: Move out of base directory source"
+- name: "{{ archive.filename }}: Move out of base directory source"  # noqa: name[template]
   ansible.builtin.copy:
     src: "{{ archive.base_destination_directory }}/{{ archive.move_and_delete_base_directory }}/"
     dest: "{{ archive.base_destination_directory }}/"
@@ -138,7 +138,7 @@
     and extract_command_status.rc is defined
     and extract_command_status.rc == 0
 
-- name: "{{ archive.filename }}: Remove base directory"
+- name: "{{ archive.filename }}: Remove base directory"  # noqa: name[template]
   ansible.builtin.file:
     path: "{{ archive.base_destination_directory }}/{{ archive.move_and_delete_base_directory }}"
     state: absent
@@ -147,14 +147,30 @@
     and extract_command_status.rc is defined
     and extract_command_status.rc == 0
 
-- name: "{{ archive.filename }}: Write sha256 file"
+- name: "{{ archive.filename }}: Set owner for extracted files"  # noqa: name[template]
+  when: not is_tar or archive.contents_owner is defined
+  ansible.builtin.file:
+    owner: "{{ archive.contents_owner | default(ansible_user) }}"
+    dest: "{{ archive.base_destination_directory }}"
+    recurse: true
+  become: true
+
+- name: "{{ archive.filename }}: Set permissions for extracted files"  # noqa: name[template]
+  when: not is_tar or archive.contents_mode is defined
+  ansible.builtin.file:
+    mode: "{{ archive.contents_mode | default('0644') }}"
+    dest: "{{ archive.base_destination_directory }}"
+    recurse: true
+  become: true
+
+- name: "{{ archive.filename }}: Write sha256 file"  # noqa: name[template]
   ansible.builtin.copy:
     dest: "{{ artifactory_status_directory }}/{{ archive.filename }}.sha256"
     content: "{{ remote_archive_head.x_checksum_sha256 }}"
     mode: u=rw,g=r,o=r
   when: extract_command_status.rc is defined and extract_command_status.rc == 0
 
-- name: "{{ archive.filename }}: Delete archive if sha256 is correct or extraction was successful"
+- name: "{{ archive.filename }}: Delete archive if sha256 is correct or extraction was successful"  # noqa: name[template]
   ansible.builtin.file:
     path: "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
     state: absent
