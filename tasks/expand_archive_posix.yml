@@ -127,22 +127,6 @@
     extract_command_status: "{{ extract_tar_command_status }}"
   when: is_tar
 
-- name: "{{ archive.filename }}: Set owner for extracted files"  # noqa: name[template]
-  when: not is_tar or archive.contents_owner is defined
-  ansible.builtin.file:
-    owner: "{{ archive.contents_owner | default(ansible_user) }}"
-    dest: "{{ archive.base_destination_directory }}"
-    recurse: true
-  become: true
-
-- name: "{{ archive.filename }}: Set permissions for extracted files"  # noqa: name[template]
-  when: not is_tar or archive.contents_mode is defined
-  ansible.builtin.file:
-    mode: "{{ archive.contents_mode | default('0644') }}"
-    dest: "{{ archive.base_destination_directory }}"
-    recurse: true
-  become: true
-
 - name: "{{ archive.filename }}: Move out of base directory source"  # noqa: name[template]
   ansible.builtin.copy:
     src: "{{ archive.base_destination_directory }}/{{ archive.move_and_delete_base_directory }}/"
@@ -162,6 +146,22 @@
     archive.move_and_delete_base_directory is defined
     and extract_command_status.rc is defined
     and extract_command_status.rc == 0
+
+- name: "{{ archive.filename }}: Set owner for extracted files"  # noqa: name[template]
+  when: not is_tar or archive.contents_owner is defined
+  ansible.builtin.file:
+    owner: "{{ archive.contents_owner | default(ansible_user) }}"
+    dest: "{{ archive.base_destination_directory }}"
+    recurse: true
+  become: true
+
+- name: "{{ archive.filename }}: Set permissions for extracted files"  # noqa: name[template]
+  when: not is_tar or archive.contents_mode is defined
+  ansible.builtin.file:
+    mode: "{{ archive.contents_mode | default('0644') }}"
+    dest: "{{ archive.base_destination_directory }}"
+    recurse: true
+  become: true
 
 - name: "{{ archive.filename }}: Write sha256 file"  # noqa: name[template]
   ansible.builtin.copy:
