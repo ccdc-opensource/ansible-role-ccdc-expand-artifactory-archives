@@ -163,6 +163,14 @@
     recurse: true
   become: true
 
+- name: "{{ archive.filename }}: Ensure correct permissions on destination directory"  # noqa: name[template]
+  ansible.builtin.file:
+    dest: "{{ archive.base_destination_directory }}"
+    state: directory
+    owner: "{{ archive.contents_owner | default(ansible_user) }}"
+    mode: "0755"
+  become: true
+
 - name: "{{ archive.filename }}: Write sha256 file"  # noqa: name[template]
   ansible.builtin.copy:
     dest: "{{ artifactory_status_directory }}/{{ archive.filename }}.sha256"
