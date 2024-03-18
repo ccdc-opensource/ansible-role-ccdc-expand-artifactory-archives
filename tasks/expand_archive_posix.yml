@@ -163,13 +163,23 @@
     recurse: true
   become: true
 
-- name: "{{ archive.filename }}: Ensure correct permissions on destination directory"  # noqa: name[template]
+- name: Gather list of all directories in {{ archive.base_destination_directory }}
+  ansible.builtin.find:
+    paths: "{{ archive.base_destination_directory }}"
+    file_type: directory
+    recurse: true
+  register: permission_directories
+
+- name: "{{ archive.filename }}: Ensure correct permissions on destination directories"  # noqa: name[template]
   ansible.builtin.file:
-    dest: "{{ archive.base_destination_directory }}"
+    dest: "{{ directory.path }}"
     state: directory
     owner: "{{ archive.contents_owner | default(ansible_user) }}"
     mode: "0755"
   become: true
+  loop: permission_directories
+  loop_control:
+    loop_var: directory
 
 - name: "{{ archive.filename }}: Write sha256 file"  # noqa: name[template]
   ansible.builtin.copy:
