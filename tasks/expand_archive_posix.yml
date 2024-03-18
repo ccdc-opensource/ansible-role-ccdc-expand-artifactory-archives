@@ -168,6 +168,7 @@
     paths: "{{ archive.base_destination_directory }}"
     file_type: directory
     recurse: true
+  become: true
   register: permission_directories
 
 - name: "{{ archive.filename }}: Ensure correct permissions on destination directories"  # noqa: name[template]
@@ -177,7 +178,7 @@
     owner: "{{ archive.contents_owner | default(ansible_user) }}"
     mode: "0755"
   become: true
-  loop: "{{ permission_directories }}"
+  loop: "{{ permission_directories.files }}"
   loop_control:
     loop_var: directory
 
