@@ -177,7 +177,7 @@
     owner: "{{ archive.contents_owner | default(ansible_user) }}"
     mode: "0755"
   become: true
-  loop: permission_directories
+  loop: "{{ permission_directories }}"
   loop_control:
     loop_var: directory
 
