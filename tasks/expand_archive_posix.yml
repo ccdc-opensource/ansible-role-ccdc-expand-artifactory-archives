@@ -157,10 +157,8 @@
 
 - name: "{{ archive.filename }}: Set permissions for extracted files"  # noqa: name[template]
   when: not is_tar or archive.contents_mode is defined
-  ansible.builtin.file:
-    mode: "{{ archive.contents_mode | default('0644') }}"
-    dest: "{{ archive.base_destination_directory }}"
-    recurse: true
+  ansible.builtin.shell: |
+    find {{ archive.base_destination_directory }} -type f -print0 | xargs -0 chmod {{ archive.contents_mode | default('0644') }}
   become: true
 
 - name: "{{ archive.filename }}: Ensure correct owner on destination directory"  # noqa: name[template]
@@ -169,31 +167,10 @@
     dest: "{{ archive.base_destination_directory }}"
   become: true
 
-- name: "{{ archive.filename }}: Ensure correct permissions on destination directory"  # noqa: name[template]
-  ansible.builtin.file:
-    dest: "{{ archive.base_destination_directory }}"
-    state: directory
-    mode: "0755"
+- name: "{{ archive.filename }}: Ensure all subdirectories in destination can be listed"  # noqa: name[template]
+  ansible.builtin.shell: |
+    find {{ archive.base_destination_directory }} -type d -print0 | xargs -0 chmod ug+x 
   become: true
-
-- name: Gather list of all directories in {{ archive.base_destination_directory }}
-  ansible.builtin.find:
-    paths: "{{ archive.base_destination_directory }}"
-    file_type: directory
-    recurse: true
-  become: true
-  register: permission_directories
-
-- name: "{{ archive.filename }}: Ensure correct permissions on destination directories"  # noqa: name[template]
-  ansible.builtin.file:
-    dest: "{{ directory.path }}"
-    state: directory
-    owner: "{{ archive.contents_owner | default(ansible_user) }}"
-    mode: "0755"
-  become: true
-  loop: "{{ permission_directories.files }}"
-  loop_control:
-    loop_var: directory
 
 - name: "{{ archive.filename }}: Write sha256 file"  # noqa: name[template]
   ansible.builtin.copy:
