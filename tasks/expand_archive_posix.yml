@@ -158,6 +158,7 @@
 - name: "{{ archive.filename }}: Set permissions for extracted files"  # noqa: name[template]
   when: not is_tar or archive.contents_mode is defined
   ansible.builtin.shell: |
+    set -o pipefail
     find {{ archive.base_destination_directory }} -type f -print0 | xargs -0 chmod {{ archive.contents_mode | default('0644') }}
   become: true
 
@@ -167,8 +168,9 @@
     dest: "{{ archive.base_destination_directory }}"
   become: true
 
-- name: "{{ archive.filename }}: Ensure all subdirectories in destination can be listed"  # noqa: name[template]
+- name: "{{ archive.filename }}: Ensure all subdirectories in destination can be listed"  # noqa: name[template] no-changed-when
   ansible.builtin.shell: |
+    set -o pipefail
     find {{ archive.base_destination_directory }} -type d -print0 | xargs -0 chmod ug+x
   become: true
 
