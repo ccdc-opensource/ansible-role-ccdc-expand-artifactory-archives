@@ -23,14 +23,14 @@
     mode: "0755"
   become: true
 
-- name: Install homebrew
+- name: Insall Homebrew + required packages
   ansible.builtin.include_role:
     name: geerlingguy.mac.homebrew
-
-- name: Add required packages
-  community.general.homebrew:
-    name: "{{ required_packages }}"
-    state: present
+  vars:
+    # This is overwritten by our group_vars (cpp.build-machines)
+    homebrew_installed_packages:
+      - "{{ required_packages }}"
+  when: not cpp_buildmachine
 
 - name: Get and expand archives
   ansible.builtin.include_tasks: expand_archive_posix.yml
