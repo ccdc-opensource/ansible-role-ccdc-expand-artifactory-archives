@@ -155,12 +155,12 @@
     recurse: true
   become: true
 
-- name: "{{ archive.filename }}: Set permissions for extracted files"  # noqa: name[template]
-  when: not is_tar or archive.contents_mode is defined
-  ansible.builtin.shell: |
-    set -o pipefail
-    find {{ archive.base_destination_directory }} -type f -print0 | xargs -0 chmod {{ archive.contents_mode | default('0644') }}
-  become: true
+# - name: "{{ archive.filename }}: Set permissions for extracted files"  # noqa: name[template]
+#   when: not is_tar or archive.contents_mode is defined
+#   ansible.builtin.shell: |
+#     set -o pipefail
+#     find {{ archive.base_destination_directory }} -type f -print0 | xargs -0 chmod {{ archive.contents_mode | default('0644') }}
+#   become: true
 
 - name: "{{ archive.filename }}: Ensure correct owner on destination directory"  # noqa: name[template]
   ansible.builtin.file:
