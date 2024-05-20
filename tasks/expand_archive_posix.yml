@@ -170,8 +170,11 @@
 
 - name: "{{ archive.filename }}: Ensure all subdirectories in destination can be listed"  # noqa: name[template] no-changed-when
   ansible.builtin.shell: |
-    set -o pipefail && find {{ archive.base_destination_directory }} -type d -print0 | xargs -0 chmod ug+x
+    set -o pipefail
+    find {{ archive.base_destination_directory }} -type d -print0 | xargs -0 chmod ug+x
   become: true
+  args:
+    executable: /bin/bash
 
 - name: "{{ archive.filename }}: Write sha256 file"  # noqa: name[template]
   ansible.builtin.copy:
