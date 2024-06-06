@@ -61,7 +61,7 @@
     "{{ archive.artifactory_path | regex_replace('/$') }}/{{ archive.filename }}"
     "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
   environment:
-    PATH: "/opt/homebrew/bin:/usr/local/bin:/usr/bin"
+    PATH: "/opt/homebrew/bin:/usr/local/bin:${{ ansible_env.PATH }}"
     CI: "true"
     JFROG_CLI_OFFER_CONFIG: "false"
     JFROG_CLI_TEMP_DIR: "{{ artifactory_tempdownloads_directory }}"
@@ -83,9 +83,11 @@
 
 - name: "{{ archive.filename }}: Extract 7z / zip archive if sha256 changed"  # noqa: no-changed-when name[template]
   ansible.builtin.command: >
-    "{{ p7zip_location }}" x -aoa -mmt=on
+    7z x -aoa -mmt=on
     "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
     -o"{{ archive.base_destination_directory }}"
+  environment:
+    PATH: "/opt/homebrew/bin:/usr/local/bin:${{ ansible_env.PATH }}"
   when: >
     is_7z
     and (not downloaded_sha256_file.stat.exists
@@ -95,8 +97,10 @@
 
 - name: "{{ archive.filename }}: Extract tar.zst archive if sha256 changed" # noqa: no-changed-when risky-shell-pipe name[template]
   ansible.builtin.shell: >
-    {{ zstd_location }} -d "{{ artifactory_downloads_directory }}/{{ archive.filename }}" -c |
+    zstd -d "{{ artifactory_downloads_directory }}/{{ archive.filename }}" -c |
     tar -x -f - -C "{{ archive.base_destination_directory }}"
+  environment:
+    PATH: "/opt/homebrew/bin:/usr/local/bin:${{ ansible_env.PATH }}"
   when: >
     is_zstd
     and (not downloaded_sha256_file.stat.exists
@@ -111,10 +115,10 @@
 
 # unarchive module has issues
 - name: "{{ archive.filename }}: Extract tar archive if sha256 changed" # noqa: no-changed-when command-instead-of-module name[template]
-  ansible.builtin.command: >
-    tar -x
-    -C "{{ archive.base_destination_directory }}"
-    -f "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
+  ansible.builtin.command:
+    cmd: tar -x -C "{{ archive.base_destination_directory }}" -f "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
+  environment:
+    PATH: "/opt/homebrew/bin:/usr/local/bin:${{ ansible_env.PATH }}"
   when: >
     is_tar
     and (not downloaded_sha256_file.stat.exists
