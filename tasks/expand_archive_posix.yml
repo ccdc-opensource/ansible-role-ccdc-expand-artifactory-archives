@@ -74,12 +74,7 @@
 
 - name: "{{ archive.filename }}: Determine archive type (part 1)"  # noqa: name[template]
   ansible.builtin.set_fact:
-    is_zstd: "{{ archive.filename.endswith('.tar.zst') }}"
-    is_tar: "{{ archive.filename.endswith('.tar.gz') or archive.filename.endswith('.tar.xz') or archive.filename.endswith('.tar.bz2') }}"
-
-- name: "{{ archive.filename }}: Determine archive type (part 2)"  # noqa: name[template]
-  ansible.builtin.set_fact:
-    is_7z: "{{ not is_zstd and not is_tar }}"
+    is_tar: "{{ archive.filename.endswith('.tar.gz') or archive.filename.endswith('.tar.xz') or archive.filename.endswith('.tar.zst') or archive.filename.endswith('.tar.bz2') }}"
 
 - name: "{{ archive.filename }}: Extract 7z / zip archive if sha256 changed"  # noqa: no-changed-when name[template]
   ansible.builtin.command: >
@@ -89,47 +84,25 @@
   environment:
     PATH: "/opt/homebrew/bin:/usr/local/bin:${{ ansible_env.PATH }}"
   when: >
-    is_7z
+    (not is_tar)
     and (not downloaded_sha256_file.stat.exists
          or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
          or not destination_directory.stat.exists or destination_directory_files.matched == 0)
   register: extract_command_status
 
-- name: "{{ archive.filename }}: Extract tar.zst archive if sha256 changed" # noqa: no-changed-when risky-shell-pipe name[template]
-  ansible.builtin.shell: >
-    zstd -d "{{ artifactory_downloads_directory }}/{{ archive.filename }}" -c |
-    tar -x -f - -C "{{ archive.base_destination_directory }}"
+- name: "{{ archive.filename }}: Extract tar archive if sha256 changed" # noqa: no-changed-when name[template]
+  ansible.builtin.shell:
+    executable: /bin/zsh
+    cmd: >
+      tar -x -f "{{ artifactory_downloads_directory }}/{{ archive.filename }}" -C "{{ archive.base_destination_directory }}"
   environment:
-    PATH: "/opt/homebrew/bin:/usr/local/bin:${{ ansible_env.PATH }}"
-  when: >
-    is_zstd
-    and (not downloaded_sha256_file.stat.exists
-         or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
-         or not destination_directory.stat.exists or destination_directory_files.matched == 0)
-  register: extract_tar_command_status
-
-- name: "{{ archive.filename }}: Save tar.zstd extraction command status"  # noqa: name[template]
-  ansible.builtin.set_fact:
-    extract_command_status: "{{ extract_tar_command_status }}"
-  when: is_zstd
-
-# unarchive module has issues
-- name: "{{ archive.filename }}: Extract tar archive if sha256 changed" # noqa: no-changed-when command-instead-of-module name[template]
-  ansible.builtin.command:
-    cmd: tar -x -C "{{ archive.base_destination_directory }}" -f "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
-  environment:
-    PATH: "/opt/homebrew/bin:/usr/local/bin:${{ ansible_env.PATH }}"
+    PATH: "/opt/homebrew/opt/gnu-tar/libexec/gnubin:/opt/homebrew/bin:/usr/local/opt/gnu-tar/libexec/gnubin:/usr/local/bin:/usr/bin:${{ ansible_env.PATH }}"
   when: >
     is_tar
     and (not downloaded_sha256_file.stat.exists
          or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
          or not destination_directory.stat.exists or destination_directory_files.matched == 0)
-  register: extract_tar_command_status
-
-- name: "{{ archive.filename }}: Save tar extraction command status"  # noqa: name[template]
-  ansible.builtin.set_fact:
-    extract_command_status: "{{ extract_tar_command_status }}"
-  when: is_tar
+  register: extract_command_status
 
 - name: "{{ archive.filename }}: Move out of base directory source"  # noqa: name[template]
   ansible.builtin.copy:
