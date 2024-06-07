@@ -61,7 +61,7 @@
     "{{ archive.artifactory_path | regex_replace('/$') }}/{{ archive.filename }}"
     "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
   environment:
-    PATH: "/opt/homebrew/bin:/usr/local/bin:${{ ansible_env.PATH }}"
+    PATH: "/opt/homebrew/bin:/usr/local/bin:{{ ansible_env.PATH }}"
     CI: "true"
     JFROG_CLI_OFFER_CONFIG: "false"
     JFROG_CLI_TEMP_DIR: "{{ artifactory_tempdownloads_directory }}"
@@ -82,7 +82,7 @@
     "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
     -o"{{ archive.base_destination_directory }}"
   environment:
-    PATH: "/opt/homebrew/bin:/usr/local/bin:${{ ansible_env.PATH }}"
+    PATH: "/opt/homebrew/bin:/usr/local/bin:{{ ansible_env.PATH }}"
   when: >
     (not is_tar)
     and (not downloaded_sha256_file.stat.exists
@@ -96,7 +96,7 @@
     cmd: >
       tar -x -f "{{ artifactory_downloads_directory }}/{{ archive.filename }}" -C "{{ archive.base_destination_directory }}"
   environment:
-    PATH: "/opt/homebrew/opt/gnu-tar/libexec/gnubin:/opt/homebrew/bin:/usr/local/opt/gnu-tar/libexec/gnubin:/usr/local/bin:/usr/bin:${{ ansible_env.PATH }}"
+    PATH: "/opt/homebrew/opt/gnu-tar/libexec/gnubin:/opt/homebrew/bin:/usr/local/opt/gnu-tar/libexec/gnubin:/usr/local/bin:{{ ansible_env.PATH }}"
   when: >
     is_tar
     and (not downloaded_sha256_file.stat.exists
