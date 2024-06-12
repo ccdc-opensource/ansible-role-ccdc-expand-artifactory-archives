@@ -8,5 +8,3 @@ required_packages:
   - gzip
   - xz
   - curl
-p7zip_location: /usr/bin/7z
-zstd_location: /usr/bin/zstd
