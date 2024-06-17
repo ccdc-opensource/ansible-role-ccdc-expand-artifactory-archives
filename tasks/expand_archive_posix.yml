@@ -92,11 +92,10 @@
 
 - name: "{{ archive.filename }}: Extract tar archive if sha256 changed" # noqa: no-changed-when name[template] command-instead-of-module
   ansible.builtin.shell:
-    executable: /bin/zsh
     cmd: >
       tar -x -f "{{ artifactory_downloads_directory }}/{{ archive.filename }}" -C "{{ archive.base_destination_directory }}"
   environment:
-    # PATH: "/opt/homebrew/opt/gnu-tar/libexec/gnubin:/opt/homebrew/bin:/usr/local/opt/gnu-tar/libexec/gnubin:/usr/local/bin:{{ ansible_env.PATH }}"
+     PATH: "/opt/homebrew/bin:/usr/local/bin:{{ ansible_env.PATH }}"
   when: >
     is_tar
     and (not downloaded_sha256_file.stat.exists
