@@ -78,7 +78,7 @@
 
 - name: "{{ archive.filename }}: Extract 7z / zip archive if sha256 changed"  # noqa: no-changed-when name[template]
   ansible.builtin.command: >
-    7z x -aoa -mmt=on
+    7z x -aoa
       "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
       -o"{{ archive.base_destination_directory }}"
   environment:
