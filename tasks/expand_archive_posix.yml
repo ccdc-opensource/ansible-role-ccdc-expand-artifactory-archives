@@ -88,10 +88,9 @@
     and (not downloaded_sha256_file.stat.exists
          or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
          or not destination_directory.stat.exists or destination_directory_files.matched == 0)
-  register: extract_command_status
   retries: 3
   delay: 5
-  register: result
+  register: extract_command_status
   until: extract_command_status.rc == 0
 
 - name: "{{ archive.filename }}: Extract tar archive if sha256 changed" # noqa: no-changed-when name[template] command-instead-of-module
