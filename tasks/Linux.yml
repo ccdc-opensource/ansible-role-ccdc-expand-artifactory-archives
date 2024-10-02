@@ -36,6 +36,10 @@
     mode: "u=rwx,g=rx,o=rx"
   become: true
 
+- name: Print archives to extract
+  ansible.builtin.debug:
+    msg: Archives {{ archive_definitions }}
+
 - name: Get and expand archives
   ansible.builtin.include_tasks: expand_archive_posix.yml
   loop: "{{ archive_definitions }}"

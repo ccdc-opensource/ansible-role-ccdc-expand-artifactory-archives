@@ -1,8 +1,8 @@
 ---
 platform_specific_default_base_artifactory_archive_directory: /opt/ccdc/artifactory-archives
 required_packages:
-  - p7zip
-  - p7zip-plugins
+  # - p7zip
+  # - p7zip-plugins
   - zstd
   - tar
   - gzip
