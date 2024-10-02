@@ -23,13 +23,16 @@
   register: download
   async: 45
   poll: 0
+  loop: "{{ archive_definitions }}"
+  loop_control:
+    loop_var: archive
 
 - name: Check sync status
   async_status:
     jid: "{{ download.ansible_job_id }}"
   loop: "{{ download.results }}"
   loop_control:
-    loop_var: "async_result_item"
+    loop_var: "download_results"
   register: async_poll_results
   until: async_poll_results.finished
   retries: 30
