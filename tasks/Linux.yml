@@ -36,9 +36,17 @@
     mode: "u=rwx,g=rx,o=rx"
   become: true
 
-- name: Print archives to extract
-  ansible.builtin.debug:
-    msg: Archives {{ archive_definitions }}
+- name: setup the required folders
+  ansible.builtin.include_tasks: prepare_expand_archives.yml
+  loop: "{{ archive_definitions | batch(2) | list }}"
+  loop_control:
+    loop_var: archive
+
+- name: download artifactory archives
+  ansible.builtin.include_tasks: download_artifactory_archives.yml
+  loop: "{{ archive_definitions }}"
+  loop_control:
+    loop_var: archive
 
 - name: Get and expand archives
   ansible.builtin.include_tasks: expand_archive_posix.yml

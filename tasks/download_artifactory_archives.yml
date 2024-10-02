@@ -1,0 +1,35 @@
+---
+- name: "{{ archive.filename }}: Download file if sha256 changed or destination directory is new" # noqa: no-changed-when name[template]
+  ansible.builtin.shell: >
+    {{ jfrog_cli_command }} rt dl
+    --flat
+    --fail-no-op
+    --retries=100
+    "--url={{ artifactory_base_url }}"
+    "--user={{ ansible_deployment_artifactory_user }}"
+    "--password={{ ansible_deployment_artifactory_key }}"
+    "{{ archive.artifactory_path | regex_replace('/$') }}/{{ archive.filename }}"
+    "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
+  environment:
+    PATH: "/opt/homebrew/bin:/usr/local/bin:{{ ansible_env.PATH }}"
+    CI: "true"
+    JFROG_CLI_OFFER_CONFIG: "false"
+    JFROG_CLI_TEMP_DIR: "{{ artifactory_tempdownloads_directory }}"
+  when: >
+    not downloaded_sha256_file.stat.exists
+    or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
+    or not destination_directory.stat.exists
+    or destination_directory_files.matched == 0
+  register: download
+  async: 45
+  poll: 0
+
+- name: Check sync status
+  async_status:
+    jid: "{{ download.ansible_job_id }}"
+  loop: "{{ download.results }}"
+  loop_control:
+    loop_var: "async_result_item"
+  register: async_poll_results
+  until: async_poll_results.finished
+  retries: 30
