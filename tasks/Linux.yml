@@ -38,7 +38,7 @@
 
 - name: setup the required folders
   ansible.builtin.include_tasks: prepare_expand_archives.yml
-  loop: "{{ archive_definitions | batch(2) | list }}"
+  loop: "{{ archive_definitions }}"
   loop_control:
     loop_var: archive
 
@@ -50,6 +50,6 @@
 
 - name: Get and expand archives
   ansible.builtin.include_tasks: expand_archive_posix.yml
-  loop: "{{ archive_definitions }}"
+  loop: "{{ archive_definitions | batch(2) }}"
   loop_control:
     loop_var: archive
