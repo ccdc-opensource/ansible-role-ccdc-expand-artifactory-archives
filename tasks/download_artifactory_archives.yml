@@ -20,7 +20,7 @@
     or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
     or not destination_directory.stat.exists
     or destination_directory_files.matched == 0
-  register: download
+  register: async_results
   async: 45
   poll: 0
   loop: "{{ archive_definitions }}"
@@ -29,10 +29,10 @@
 
 - name: Check sync status
   async_status:
-    jid: "{{ download.ansible_job_id }}"
-  loop: "{{ download.results }}"
+    jid: "{{ async_result_item.ansible_job_id }}"
+  loop: "{{ async_results.results }}"
   loop_control:
-    loop_var: "download_results"
+    loop_var: "async_result_item"
   register: async_poll_results
   until: async_poll_results.finished
   retries: 30
