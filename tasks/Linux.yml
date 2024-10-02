@@ -44,10 +44,10 @@
 
 - name: download artifactory archives
   ansible.builtin.include_tasks: download_artifactory_archives.yml
-  loop: "{{ archive_definitions }}"
-  loop_control:
-    loop_var: archive
+  loop: "{{ archive_definitions | batch(2) }}"
 
 - name: Get and expand archives
   ansible.builtin.include_tasks: expand_archive_posix.yml
-  loop: "{{ archive_definitions | batch(2) }}"
+  loop: "{{ archive_definitions }}"
+  loop_control:
+    loop_var: archive
