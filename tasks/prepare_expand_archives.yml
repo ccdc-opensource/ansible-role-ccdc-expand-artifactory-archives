@@ -12,7 +12,7 @@
     paths: "{{ archive.base_destination_directory }}"
     file_type: any
   register: destination_directory_files
-  when: destination_directory.stat.exists
+  when: item.destination_directory.stat.exists
   loop: "{{ archive_definitions }}"
   loop_control:
     loop_var: archive
@@ -39,7 +39,7 @@
   ansible.builtin.slurp:
     src: "{{ artifactory_status_directory }}/{{ archive.filename }}.sha256"
   register: downloaded_sha256_file_sha256
-  when: downloaded_sha256_file.stat.exists
+  when: item.downloaded_sha256_file.stat.exists
   loop: "{{ archive_definitions }}"
   loop_control:
     loop_var: archive
@@ -68,7 +68,7 @@
   ansible.builtin.file:
     path: "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
     state: absent
-  when: downloaded_file.stat.exists and remote_archive_head.content_length != downloaded_file.stat.size
+  when: item.downloaded_file.stat.exists and item.remote_archive_head.content_length != item.downloaded_file.stat.size
   loop: "{{ archive_definitions }}"
   loop_control:
     loop_var: archive
