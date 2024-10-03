@@ -13,7 +13,9 @@
     file_type: any
   register: destination_directory_files
   when: item.stat.exists
-  loop: "{{ destination_directory.results }}"
+  loop: "{{ archive_definitions }}"
+  loop_control:
+    loop_var: archive
 
 - name: "{{ archive.filename }}: Ensure destination directory is present" # noqa: name[template]
   ansible.builtin.file:
