@@ -38,9 +38,6 @@
 
 - name: setup the required folders
   ansible.builtin.include_tasks: prepare_expand_archives.yml
-  loop: "{{ archive_definitions }}"
-  loop_control:
-    loop_var: archive
 
 - name: download artifactory archives
   ansible.builtin.include_tasks: download_artifactory_archives.yml

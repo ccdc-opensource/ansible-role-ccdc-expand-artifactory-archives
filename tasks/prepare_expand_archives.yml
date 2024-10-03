@@ -3,6 +3,9 @@
   ansible.builtin.stat:
     path: "{{ archive.base_destination_directory }}"
   register: destination_directory
+  loop: "{{ archive_definitions }}"
+  loop_control:
+    loop_var: archive
 
 - name: "{{ archive.filename }}: Check if destination directory is empty" # noqa: name[template]
   ansible.builtin.find:
@@ -10,6 +13,9 @@
     file_type: any
   register: destination_directory_files
   when: destination_directory.stat.exists
+  loop: "{{ archive_definitions }}"
+  loop_control:
+    loop_var: archive
 
 - name: "{{ archive.filename }}: Ensure destination directory is present" # noqa: name[template]
   ansible.builtin.file:
@@ -17,17 +23,26 @@
     state: directory
     owner: "{{ ansible_user }}"
     mode: "0755"
+  loop: "{{ archive_definitions }}"
+  loop_control:
+    loop_var: archive
 
 - name: "{{ archive.filename }}: Check sha256 file is present" # noqa: name[template]
   ansible.builtin.stat:
     path: "{{ artifactory_status_directory }}/{{ archive.filename }}.sha256"
   register: downloaded_sha256_file
+  loop: "{{ archive_definitions }}"
+  loop_control:
+    loop_var: archive
 
 - name: "{{ archive.filename }}: Read sha256 from downloaded_sha256_file file if present" # noqa: name[template]
   ansible.builtin.slurp:
     src: "{{ artifactory_status_directory }}/{{ archive.filename }}.sha256"
   register: downloaded_sha256_file_sha256
   when: downloaded_sha256_file.stat.exists
+  loop: "{{ archive_definitions }}"
+  loop_control:
+    loop_var: archive
 
 - name: "{{ archive.filename }}: Perform a HEAD on the remote file to read sha256" # noqa: name[template]
   ansible.builtin.uri:
@@ -37,14 +52,23 @@
     url_username: "{{ ansible_deployment_artifactory_user }}"
     url_password: "{{ ansible_deployment_artifactory_key }}"
   register: remote_archive_head
+  loop: "{{ archive_definitions }}"
+  loop_control:
+    loop_var: archive
 
 - name: "{{ archive.filename }}: Check downloaded file is present" # noqa: name[template]
   ansible.builtin.stat:
     path: "{{ artifactory_status_directory }}/{{ archive.filename }}"
   register: downloaded_file
+  loop: "{{ archive_definitions }}"
+  loop_control:
+    loop_var: archive
 
 - name: "{{ archive.filename }}: Delete the downloaded archive if the size is different" # noqa: name[template]
   ansible.builtin.file:
     path: "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
     state: absent
   when: downloaded_file.stat.exists and remote_archive_head.content_length != downloaded_file.stat.size
+  loop: "{{ archive_definitions }}"
+  loop_control:
+    loop_var: archive
