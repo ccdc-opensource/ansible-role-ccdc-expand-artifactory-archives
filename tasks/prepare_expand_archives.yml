@@ -35,7 +35,7 @@
 
 - name: "Read SHA256 content from files if present"
   ansible.builtin.slurp:
-    src: "{{ artifactory_status_directory }}/{{ item.item.filename }}.sha256"
+    src: "{{ artifactory_status_directory }}/{{ item.filename }}.sha256"
   register: sha256_content
   when: item.stat.exists
   loop: "{{ sha256_files.results }}"
