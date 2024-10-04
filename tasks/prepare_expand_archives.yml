@@ -1,5 +1,5 @@
 ---
-- name: "{{ archive.filename }}: Check if destination directory is present" # noqa: name[template]
+- name: "Check if destination directory is present" # noqa: name[template]
   ansible.builtin.stat:
     path: "{{ archive.base_destination_directory }}"
   register: destination_directory
@@ -7,13 +7,15 @@
   loop_control:
     loop_var: archive
 
-- name: "{{ archive.filename }}: Check if destination directory is empty" # noqa: name[template]
+- name: "Check if destination directory is empty" # noqa: name[template]
   ansible.builtin.find:
-    paths: "{{ item.item.base_destination_directory }}"
+    paths: "{{ base_destination_directory }}"
     file_type: any
   register: destination_directory_files
-  when: item.stat.exists
-  loop: "{{ destination_directory.results }}"
+  when: item.destination_directory.stat.exists
+  loop: "{{ archive_definitions }}"
+  loop_control:
+    loop_var: archive
 
 
 - name: "{{ archive.filename }}: Ensure destination directory is present" # noqa: name[template]
