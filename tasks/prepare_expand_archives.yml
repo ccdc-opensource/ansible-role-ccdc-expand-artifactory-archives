@@ -25,19 +25,20 @@
   loop_control:
     loop_var: archive
 
-- name: "Check sha256 file is present" # noqa: name[template]
+- name: "Check if SHA256 files are present"
   ansible.builtin.stat:
     path: "{{ artifactory_status_directory }}/{{ archive.filename }}.sha256"
-  register: downloaded_sha256_file
+  register: sha256_files
   loop: "{{ archive_definitions }}"
   loop_control:
     loop_var: archive
 
-- name: "Read sha256 from downloaded_sha256_file file if present" # noqa: name[template]
+- name: "Read SHA256 content from files if present"
   ansible.builtin.slurp:
-    src: "{{ artifactory_status_directory }}/{{ item.filename }}.sha256"
+    src: "{{ artifactory_status_directory }}/{{ item.item.filename }}.sha256"
+  register: sha256_content
   when: item.stat.exists
-  loop: "{{ downloaded_sha256_file.results }}"
+  loop: "{{ sha256_files.results }}"
   loop_control:
     loop_var: item
 
@@ -61,11 +62,13 @@
   loop_control:
     loop_var: archive
 
-- name: "Delete the downloaded archive if the size is different" # noqa: name[template]
+- name: "Delete the downloaded archive if sha256 mismatch" # noqa: name[template]
   ansible.builtin.file:
     path: "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
     state: absent
-  when: item.downloaded_file.stat.exists and item.remote_archive_head.content_length != item.downloaded_file.stat.size
+  when:
+    - item.downloaded_file.stat.exists
+    - (sha256_content.results | selectattr('item.filename', 'equalto', item.filename) | first).content.sha256 != remote_archive_head.content.sha256
   loop: "{{ archive_definitions }}"
   loop_control:
     loop_var: archive
