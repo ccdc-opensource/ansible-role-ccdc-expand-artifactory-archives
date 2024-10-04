@@ -62,8 +62,6 @@
   loop_control:
     loop_var: archive
 
-- name: Set Facts
-
 - name: Delete the downloaded archive if the size is different"  # noqa: name[template]
   ansible.builtin.file:
     path: "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
