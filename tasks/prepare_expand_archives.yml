@@ -35,8 +35,7 @@
 
 - name: "Read sha256 from downloaded_sha256_file file if present" # noqa: name[template]
   ansible.builtin.slurp:
-    src: "{{ artifactory_status_directory }}/{{ item.stat.path }}.sha256"
-  register: downloaded_sha256_file_sha256
+    src: "{{ artifactory_status_directory }}/{{ item.item.filename }}.sha256"
   when: item.stat.exists
   loop: "{{ downloaded_sha256_file.results }}"
   loop_control:
