@@ -62,11 +62,17 @@
   loop_control:
     loop_var: archive
 
-- name: "Delete the downloaded archive if sha256 mismatch"
+- name: Set Facts
+
+- name: Delete the downloaded archive if the size is different"  # noqa: name[template]
   ansible.builtin.file:
-    path: "{{ artifactory_downloads_directory }}/{{ item.filename }}"
+    path: "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
     state: absent
-  when: item.stat.exists and item.sha256_content.content != item.remote_archive_head.content
+  when: item[0].stat.exists and item[1].content_length != item[2].stat.size
+  with_together:
+    - "{{ downloaded_file.results }}"
+    - "{{ remote_archive_head.results }}"
+    - "{{ downloaded_file.results }}"
   loop: "{{ archive_definitions }}"
   loop_control:
-    loop_var: item
+    loop_var: archive
