@@ -13,7 +13,7 @@
     file_type: any
   register: destination_directory_files
   when: item.stat.exists and not item.stat.isdir
-  loop: "{{ directory_stats.results }}"
+  loop: "{{ destination_directory.results }}"
   loop_control:
     loop_var: item
 
