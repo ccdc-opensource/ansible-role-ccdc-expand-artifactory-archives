@@ -66,7 +66,7 @@
   ansible.builtin.file:
     path: "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
     state: absent
-  when: item[0].stat.exists and item[1].content_length != item[2].stat.size
+  when: item.0.stat.exists and item.1.content_length != item.2.stat.size
   with_together:
     - "{{ downloaded_file.results }}"
     - "{{ remote_archive_head.results }}"
