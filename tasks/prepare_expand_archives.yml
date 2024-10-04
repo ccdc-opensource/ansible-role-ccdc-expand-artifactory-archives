@@ -7,15 +7,15 @@
   loop_control:
     loop_var: archive
 
-- name: "Check if destination directory is empty" # noqa: name[template]
+- name: "Check if destination directories are empty"
   ansible.builtin.find:
-    paths: "{{ base_destination_directory }}"
+    paths: "{{ item.stat.path }}"
     file_type: any
   register: destination_directory_files
-  when: item.destination_directory.stat.exists
-  loop: "{{ archive_definitions }}"
+  when: item.stat.exists and not item.stat.isdir
+  loop: "{{ directory_stats.results }}"
   loop_control:
-    loop_var: archive
+    loop_var: item
 
 
 - name: "{{ archive.filename }}: Ensure destination directory is present" # noqa: name[template]
