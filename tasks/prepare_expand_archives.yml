@@ -62,13 +62,11 @@
   loop_control:
     loop_var: archive
 
-- name: "Delete the downloaded archive if sha256 mismatch" # noqa: name[template]
+- name: "Delete the downloaded archive if sha256 mismatch"
   ansible.builtin.file:
-    path: "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
+    path: "{{ artifactory_downloads_directory }}/{{ item.filename }}"
     state: absent
-  when:
-    - item.downloaded_file.stat.exists
-    - (sha256_content.results | selectattr('item.filename', 'equalto', item.filename) | first).content.sha256 != remote_archive_head.content.sha256
+  when: item.stat.exists and item.sha256_content.content != item.remote_archive_head.content
   loop: "{{ archive_definitions }}"
   loop_control:
-    loop_var: archive
+    loop_var: item
