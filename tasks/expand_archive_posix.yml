@@ -94,6 +94,6 @@
     path: "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
     state: absent
   when: >
-    (downloaded_sha256_file.stat.exists
+    (downloaded_sha256_file.results[loop_index].stat.exists
      and remote_archive_head.results[loop_index].x_checksum_sha256 in downloaded_sha256_file_sha256.results[loop_index].content | b64decode)
     or (extract_command_status.rc is defined and extract_command_status.rc == 0)
