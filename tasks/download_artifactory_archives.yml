@@ -1,13 +1,13 @@
 ---
-- name: "{{ archive.filename }}: Download file if sha256 changed or destination directory is new" # noqa: no-changed-when name[template]
+- name: Download file if sha256 changed or destination directory is new
   ansible.builtin.shell: >
     {{ jfrog_cli_command }} rt dl
     --flat
     --fail-no-op
     --retries=100
-    "--url={{ artifactory_base_url }}"
-    "--user={{ ansible_deployment_artifactory_user }}"
-    "--password={{ ansible_deployment_artifactory_key }}"
+    --url={{ artifactory_base_url }}
+    --user={{ ansible_deployment_artifactory_user }}
+    --password={{ ansible_deployment_artifactory_key }}
     "{{ archive.artifactory_path | regex_replace('/$') }}/{{ archive.filename }}"
     "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
   environment:
@@ -15,17 +15,18 @@
     CI: "true"
     JFROG_CLI_OFFER_CONFIG: "false"
     JFROG_CLI_TEMP_DIR: "{{ artifactory_tempdownloads_directory }}"
-  when: >
-    not downloaded_sha256_file.stat.exists
-    or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
-    or not destination_directory.stat.exists
-    or destination_directory_files.matched == 0
+  when:
+    not downloaded_sha256_file.results[loop_index].stat.exists
+    or remote_archive_head.results[loop_index].x_checksum_sha256 not in downloaded_sha256_file_sha256.results[loop_index].content | b64decode
+    or not destination_directory.results[loop_index].stat.exists
+    or destination_directory_files.results[loop_index].matched == 0
   register: async_results
   async: 45
   poll: 0
   loop: "{{ archive_definitions }}"
   loop_control:
     loop_var: archive
+    index_var: loop_index
 
 - name: Check sync status
   async_status:

@@ -12,9 +12,9 @@
     PATH: "/opt/homebrew/bin:/usr/local/bin:{{ ansible_env.PATH }}"
   when: >
     (not is_tar)
-    and (not downloaded_sha256_file.stat.exists
-         or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
-         or not destination_directory.stat.exists or destination_directory_files.matched == 0)
+    and (not downloaded_sha256_file.results[loop_index].stat.exists
+         or remote_archive_head.results[loop_index].x_checksum_sha256 not in downloaded_sha256_file_sha256.results[loop_index].content | b64decode
+         or not destination_directory.results[loop_index].stat.exists or destination_directory_files.results[loop_index].matched == 0)
   retries: 3
   delay: 5
   register: extract_command_status
@@ -28,9 +28,9 @@
     PATH: "/opt/homebrew/bin:/usr/local/bin:{{ ansible_env.PATH }}"
   when: >
     is_tar
-    and (not downloaded_sha256_file.stat.exists
-         or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
-         or not destination_directory.stat.exists or destination_directory_files.matched == 0)
+    and (not downloaded_sha256_file.results[loop_index].stat.exists
+         or remote_archive_head.results[loop_index].x_checksum_sha256 not in downloaded_sha256_file_sha256.results[loop_index].content | b64decode
+         or not destination_directory.results[loop_index].stat.exists or destination_directory_files.results[loop_index].matched == 0)
   register: extract_command_status
 
 - name: "{{ archive.filename }}: Move out of base directory source"  # noqa: name[template]
@@ -95,5 +95,5 @@
     state: absent
   when: >
     (downloaded_sha256_file.stat.exists
-     and remote_archive_head.x_checksum_sha256 in downloaded_sha256_file_sha256.content | b64decode)
+     and remote_archive_head.results[loop_index].x_checksum_sha256 in downloaded_sha256_file_sha256.results[loop_index].content | b64decode)
     or (extract_command_status.rc is defined and extract_command_status.rc == 0)
