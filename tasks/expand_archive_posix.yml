@@ -85,7 +85,7 @@
 - name: "{{ archive.filename }}: Write sha256 file"  # noqa: name[template]
   ansible.builtin.copy:
     dest: "{{ artifactory_status_directory }}/{{ archive.filename }}.sha256"
-    content: "{{ remote_archive_head.x_checksum_sha256 }}"
+    content: "{{ remote_archive_head.results[loop_index].x_checksum_sha256 }}"
     mode: u=rw,g=r,o=r
   when: extract_command_status.rc is defined and extract_command_status.rc == 0
 
