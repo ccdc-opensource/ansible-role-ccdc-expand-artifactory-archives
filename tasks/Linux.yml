@@ -48,3 +48,4 @@
   loop: "{{ archive_definitions }}"
   loop_control:
     loop_var: archive
+    index_var: loop_index
