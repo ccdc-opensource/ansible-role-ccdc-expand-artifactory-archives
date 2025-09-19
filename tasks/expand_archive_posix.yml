@@ -61,7 +61,7 @@
       "{{ archive.artifactory_path | regex_replace('/$') }}/{{ archive.filename }}"
       "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
   environment:
-    PATH: "/opt/homebrew/bin:{{ ansible_env.PATH }}"
+    PATH: "{{ homebrew_prefix }}/bin:{{ ansible_env.PATH }}"
     CI: "true"
     JFROG_CLI_OFFER_CONFIG: "false"
     JFROG_CLI_TEMP_DIR: "{{ artifactory_tempdownloads_directory }}"
