@@ -41,6 +41,8 @@
     url_username: "{{ ansible_deployment_artifactory_user }}"
     url_password: "{{ ansible_deployment_artifactory_key }}"
   register: remote_archive_head
+  retries: 5
+  delay: 15
 
 - name: "{{ archive.filename }}: Check downloaded file is present"  # noqa: name[template]
   ansible.windows.win_stat:
