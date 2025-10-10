@@ -62,8 +62,6 @@
     --flat
     --fail-no-op
     --retries=100
-    --detailed-summary
-    --log-level=DEBUG
     "--url={{ artifactory_base_url }}"
     "--user={{ ansible_deployment_artifactory_user }}"
     "--password={{ ansible_deployment_artifactory_key }}"
@@ -75,7 +73,7 @@
     or not destination_directory.stat.exists
     or (destination_directory_files.matched == 0 and destination_directory_subdirs.matched == 0)
   register: download
-  retries: 3
+  retries: 10
   delay: 10
   until: download.rc == 0
 
