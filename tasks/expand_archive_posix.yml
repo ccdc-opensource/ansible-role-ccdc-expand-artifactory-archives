@@ -51,47 +51,20 @@
     state: absent
   when: downloaded_file.stat.exists and remote_archive_head.content_length != downloaded_file.stat.size
 
-- name: "{{ archive.filename }}: Download file if sha256 changed or destination directory is new"  # noqa: no-changed-when name[template]
+- name: "{{ archive.filename }}: Download file with curl"  # noqa: no-changed-when name[template]
   ansible.builtin.shell: >
-      {{ jfrog_cli_command }} rt dl
-      --flat
-      --fail-no-op
-      --retries=100
-      "--url={{ artifactory_base_url }}"
-      "--user={{ ansible_deployment_artifactory_user }}"
-      "--password={{ ansible_deployment_artifactory_key }}"
-      "{{ archive.artifactory_path | regex_replace('/$') }}/{{ archive.filename }}"
-      "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
-  environment:
-    PATH: "{{ homebrew_prefix }}/bin:{{ ansible_env.PATH }}"
-    CI: "true"
-    JFROG_CLI_OFFER_CONFIG: "false"
-    JFROG_CLI_TEMP_DIR: "{{ artifactory_tempdownloads_directory }}"
-  when: >
-    not downloaded_sha256_file.stat.exists
-    or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
-    or not destination_directory.stat.exists
-    or destination_directory_files.matched == 0
-  register: download
-  retries: 15
-  delay: 20
-  until: download.rc == 0
-
-- name: "{{ archive.filename }}: Fallback download with curl if jfrog failed"  # noqa: no-changed-when name[template]
-  ansible.builtin.shell: >
-    curl -L --fail --retry 5 --retry-delay 10
+    curl -L --fail --retry 10 --retry-delay 15 --retry-max-time 600
     -u "{{ ansible_deployment_artifactory_user }}:{{ ansible_deployment_artifactory_key }}"
     -o "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
     "{{ artifactory_base_url }}/{{ archive.artifactory_path }}/{{ archive.filename }}"
   environment:
     PATH: "{{ homebrew_prefix }}/bin:{{ ansible_env.PATH }}"
   when: >
-    download is failed
-    and (not downloaded_sha256_file.stat.exists
-         or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
-         or not destination_directory.stat.exists
-         or destination_directory_files.matched == 0)
-  register: curl_download
+    not downloaded_sha256_file.stat.exists
+    or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
+    or not destination_directory.stat.exists
+    or destination_directory_files.matched == 0
+  register: download
 
 - name: "{{ archive.filename }}: Determine archive type (part 1)"  # noqa: name[template]
   ansible.builtin.set_fact:
@@ -106,7 +79,7 @@
     PATH: "/opt/homebrew/bin:/usr/local/bin:{{ ansible_env.PATH }}"
   when: >
     (not is_tar)
-    and ((download is succeeded) or (curl_download is succeeded))
+    and (download is succeeded)
     and (not downloaded_sha256_file.stat.exists
          or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
          or not destination_directory.stat.exists or destination_directory_files.matched == 0)
@@ -123,7 +96,7 @@
     PATH: "/opt/homebrew/bin:/usr/local/bin:{{ ansible_env.PATH }}"
   when: >
     is_tar
-    and ((download is succeeded) or (curl_download is succeeded))
+    and (download is succeeded)
     and (not downloaded_sha256_file.stat.exists
          or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
          or not destination_directory.stat.exists or destination_directory_files.matched == 0)

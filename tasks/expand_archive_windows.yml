@@ -55,43 +55,18 @@
     state: absent
   when: downloaded_file.stat.exists and remote_archive_head.content_length != downloaded_file.stat.size
 
-- name: "{{ archive.filename }}: Download file if sha256 changed or destination directory is new"  # noqa: name[template]
+- name: "{{ archive.filename }}: Download file with curl"  # noqa: name[template]
   ansible.windows.win_shell: >
-    $env:CI = 'true';
-    $env:JFROG_CLI_OFFER_CONFIG = 'false';
-    $env:JFROG_CLI_TEMP_DIR = "{{ artifactory_tempdownloads_directory }}";
-    {{ jfrog_cli_command }} rt dl
-    --flat
-    --fail-no-op
-    --retries=100
-    "--url={{ artifactory_base_url }}"
-    "--user={{ ansible_deployment_artifactory_user }}"
-    "--password={{ ansible_deployment_artifactory_key }}"
-    "{{ archive.artifactory_path | regex_replace('/$') }}/{{ archive.filename }}"
-    "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
+    curl -L --fail --retry 10 --retry-delay 15 --retry-max-time 600
+    -u "{{ ansible_deployment_artifactory_user }}:{{ ansible_deployment_artifactory_key }}"
+    -o "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
+    "{{ artifactory_base_url }}/{{ archive.artifactory_path }}/{{ archive.filename }}"
   when: >
     not downloaded_sha256_file.stat.exists
     or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
     or not destination_directory.stat.exists
     or (destination_directory_files.matched == 0 and destination_directory_subdirs.matched == 0)
   register: download
-  retries: 15
-  delay: 20
-  until: download.rc == 0
-
-- name: "{{ archive.filename }}: Fallback download with curl if jfrog failed"  # noqa: name[template]
-  ansible.windows.win_shell: >
-    curl -L --fail --retry 5 --retry-delay 10
-    -u "{{ ansible_deployment_artifactory_user }}:{{ ansible_deployment_artifactory_key }}"
-    -o "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
-    "{{ artifactory_base_url }}/{{ archive.artifactory_path }}/{{ archive.filename }}"
-  when: >
-    download is failed
-    and (not downloaded_sha256_file.stat.exists
-         or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
-         or not destination_directory.stat.exists
-         or (destination_directory_files.matched == 0 and destination_directory_subdirs.matched == 0))
-  register: curl_download
 
 - name: "{{ archive.filename }} Determine archive type (part 1)"  # noqa: name[template]
   ansible.builtin.set_fact:
@@ -110,7 +85,7 @@
     -o"{{ archive.base_destination_directory }}"
   when: >
     is_7z
-    and ((download is succeeded) or (curl_download is succeeded))
+    and (download is succeeded)
     and (not downloaded_sha256_file.stat.exists
          or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
          or not destination_directory.stat.exists
@@ -125,7 +100,7 @@
     executable: cmd # Powershell truncates zstd output
   when: >
     is_zstd
-    and ((download is succeeded) or (curl_download is succeeded))
+    and (download is succeeded)
     and (not downloaded_sha256_file.stat.exists
          or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
          or not destination_directory.stat.exists
@@ -145,7 +120,7 @@
     executable: cmd # Powershell truncates zstd output
   when: >
     is_bz2
-    and ((download is succeeded) or (curl_download is succeeded))
+    and (download is succeeded)
     and (not downloaded_sha256_file.stat.exists
          or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode
          or not destination_directory.stat.exists
@@ -164,7 +139,7 @@
     -f "{{ artifactory_downloads_directory }}/{{ archive.filename }}"
   when: >
     is_tar
-    and ((download is succeeded) or (curl_download is succeeded))
+    and (download is succeeded)
     and (not downloaded_sha256_file.stat.exists
          or remote_archive_head.x_checksum_sha256 not in downloaded_sha256_file_sha256.content | b64decode)
   register: extract_tar_command_status
